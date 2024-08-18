@@ -8,8 +8,8 @@ class Square {
         Square(const unsigned int num, const unsigned int price, const std::string &type, const unsigned int player_no);
         unsigned int getNum() const;
         unsigned int getPrice() const;
-        std::string Square::getType() const;
-        unsigned int Square::getPlayerNo() const;
+        std::string getType() const;
+        unsigned int getPlayerNo() const;
         bool owned;
         int houses;
 
