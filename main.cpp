@@ -124,46 +124,46 @@ int main()
 
     //array of Squares
     Square squares[40] = {
-        Square(0, 0, "GO!", 0), //go
-        Square(1, 60, "brown", 0), //New Zealand
-        Square(2, 0, "shipment", 0),
-        Square(3, 60, "brown", 0), //Australia
-        Square(4, 200, "fee", 0),
-        Square(5, 200, "airport", 0),
-        Square(6, 100, "cyan", 0),
-        Square(7, 0, "god's plan", 0),
-        Square(8, 100, "cyan", 0),
-        Square(9, 120, "cyan", 0),
-        Square(10,0,"free", 0),
-        Square(11, 140, "pink", 0),
-        Square(12, 150, "util", 0),
-        Square(13, 140, "pink", 0),
-        Square(14, 160, "pink", 0),
-        Square(15, 200, "airport", 0),
-        Square(16, 180, "orange", 0),
-        Square(17, 0, "shipment", 0),
-        Square(18, 180, "orange", 0),
-        Square(19, 200, "orange", 0),
-        Square(20, 0, "IMF", 0),
-        Square(21, 220, "red", 0),
-        Square(22, 0, "god's plan", 0),
-        Square(23, 220, "red", 0),
-        Square(24, 240, "red", 0),
-        Square(25, 200, "airport", 0),
-        Square(26, 260, "yellow", 0),
-        Square(27, 260, "yellow", 0),
-        Square(28, 150, "util", 0),
-        Square(29, 280, "yellow", 0),
-        Square(30, 0, "jail", 0),
-        Square(31, 300, "green", 0),
-        Square(32, 300, "green", 0),
-        Square(33, 0, "shipment", 0),
-        Square(34, 320, "green", 0),
-        Square(35, 200, "airport", 0),
-        Square(36, 0, "god's plan", 0),
-        Square(37, 350, "blue", 0),
-        Square(38, 100, "fee", 0),
-        Square(39, 400, "blue", 0),
+        Square(0, 0, "GO!", 0, 0), //go
+        Square(1, 60, "brown", 1, 0), //New Zealand
+        Square(2, 0, "shipment", 0,0),
+        Square(3, 60, "brown", 1, 0), //Australia
+        Square(4, 200, "fee", 0,0),
+        Square(5, 200, "airport", 1, 0),
+        Square(6, 100, "cyan", 1, 0),
+        Square(7, 0, "god's plan", 0,0),
+        Square(8, 100, "cyan", 1, 0),
+        Square(9, 120, "cyan", 1, 0),
+        Square(10,0,"free", 0,0),
+        Square(11, 140, "pink", 1, 0),
+        Square(12, 150, "util", 1,0),
+        Square(13, 140, "pink", 1, 0),
+        Square(14, 160, "pink", 1, 0),
+        Square(15, 200, "airport", 1, 0),
+        Square(16, 180, "orange", 1, 0),
+        Square(17, 0, "shipment", 0,0),
+        Square(18, 180, "orange", 1, 0),
+        Square(19, 200, "orange", 1, 0),
+        Square(20, 0, "IMF", 0,0),
+        Square(21, 220, "red", 1, 0),
+        Square(22, 0, "god's plan", 0,0),
+        Square(23, 220, "red", 1, 0),
+        Square(24, 240, "red", 1, 0),
+        Square(25, 200, "airport", 1,0),
+        Square(26, 260, "yellow", 1, 0),
+        Square(27, 260, "yellow", 1, 0),
+        Square(28, 150, "util", 1,0),
+        Square(29, 280, "yellow", 1, 0),
+        Square(30, 0, "jail", 0,0),
+        Square(31, 300, "green", 1, 0),
+        Square(32, 300, "green", 1, 0),
+        Square(33, 0, "shipment", 0,0),
+        Square(34, 320, "green", 1, 0),
+        Square(35, 200, "airport", 1, 0),
+        Square(36, 0, "god's plan", 0,0),
+        Square(37, 350, "blue", 1, 0),
+        Square(38, 100, "fee", 0,0),
+        Square(39, 400, "blue", 1, 0),
     };
 
     std::random_device rd; //random number generator
@@ -173,7 +173,7 @@ int main()
     sf::Clock clock; //clock for animation
     
     //booleans for game states. Is the dice rolling? Is it buying phase? Etc.
-    bool canClick = true; 
+    bool canRoll = true; 
 
     //turns and dice rolling logic
     bool player1_turn = true;
@@ -183,7 +183,8 @@ int main()
 
     //various game messages
     Text same_roll_notif(font, "Same numbers! Roll again.", sf::Color::Black, 48, sf::Vector2f(250.f,250.f));
-    Text buying_phase(font, "BUY?             AUCTION?", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
+    Text buying_phase(font, "BUY?", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
+    Text auction_phase(font, "AUCTION?", sf::Color::Black, 48, sf::Vector2f(600.f,350.f));
     Text jail_notif(font, "GO TO JAIL.", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
 
     // Main loop
@@ -192,11 +193,10 @@ int main()
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
-                window.close();
-            if (event.type == sf::Event::MouseButtonPressed && canClick)
+            if (event.type == sf::Event::Closed) window.close();
+            if (event.type == sf::Event::MouseButtonPressed && canRoll)
             {
-                canClick = false;
+                canRoll = false;
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 //roll the dice on a dice click
                 if (dice.shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
@@ -211,6 +211,20 @@ int main()
                         dice.dice_info.setString("Player " + std::to_string(1) + ": " + std::to_string(dice.die1) + " and " + std::to_string(dice.die2));
                     else
                         dice.dice_info.setString("Player " + std::to_string(2) + ": " + std::to_string(dice.die1) + " and " + std::to_string(dice.die2));
+                }
+            }
+            if (event.type == sf::Event::MouseButtonPressed && is_buying_phase) {
+                //std::cout << "hi" << std::endl;
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if (buying_phase.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    if (player1_turn) {
+                        player1_turn = false;
+                        player2_turn = true;
+                    } else if (player2_turn) {
+                        player1_turn = true;
+                        player2_turn = false;
+                    }
+                    is_buying_phase = false;
                 }
             }
         }
@@ -229,8 +243,12 @@ int main()
                     dice.roll_indices++;
                     P1.shape.setPosition(P1.position_coordinates[P1.currentPos]);
                     if (dice.roll_indices == dice.roll_result && !same_roll) { //this indicates the turn is over, when destination is reached
-                        player1_turn = false;
-                        player2_turn = true;
+                        if (squares[P1.currentPos].getBuyable()) {
+                            is_buying_phase = true;
+                        }
+                        else {
+                            player1_turn = false;player2_turn = true;
+                        }
                     }
                     clock.restart();
                 }
@@ -247,14 +265,17 @@ int main()
                     dice.roll_indices++;
                     P2.shape.setPosition(positions2[P2.currentPos]);
                     if (dice.roll_indices == dice.roll_result && !same_roll) {
-                        player1_turn = true;
-                        player2_turn = false;
+                        if (squares[P2.currentPos].getBuyable()) {
+                            is_buying_phase = true;
+                        } else {
+                            player1_turn = true;player2_turn = false;
+                        }
                     }
                     clock.restart();
                 }
             }
         } else {
-            canClick = true;
+            canRoll = true;
             dice.roll_indices = 0;
             dice.roll_result = 0;
         }
@@ -263,7 +284,11 @@ int main()
         window.clear();
         window.draw(sprite); // Draw the scaled sprite of the game board
         if (same_roll) window.draw(same_roll_notif.content);
-        window.draw(buying_phase.content);
+        if (is_buying_phase) {
+            window.draw(buying_phase.content);
+            window.draw(auction_phase.content);
+            canRoll = false;
+        }
         window.draw(P1.shape);
         window.draw(P2.shape);
         window.draw(dice.shape);

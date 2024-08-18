@@ -1,7 +1,7 @@
 #include "Square.h"
 
-Square::Square(const unsigned int num, const unsigned int price, const std::string &type, const unsigned int player_no) 
-    : num(num), houses(0), price(price), owned(0), type(type), player_no(0)
+Square::Square(const unsigned int num, const unsigned int price,  const std::string &type, const bool buyable, const unsigned int player_no) 
+    : num(num), houses(0), price(price), owned(0), type(type), buyable(buyable), player_no(0)
 {
 
 }
@@ -16,6 +16,10 @@ unsigned int Square::getPrice() const {
 
 std::string Square::getType() const {
     return type;
+}
+
+bool Square::getBuyable() const {
+    return buyable;
 }
 
 unsigned int Square::getPlayerNo() const {
