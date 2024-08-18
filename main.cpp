@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include "Player.h"
 #include "Dice.h"
+#include "Text.h"
 
 int main()
 {
@@ -130,10 +131,13 @@ int main()
     bool canClick = true; 
 
     //turns and dice rolling logic
-    bool diceRolled = false;
     bool player1_turn = true;
     bool player2_turn = false;
     bool same_roll = false;
+
+    //various game messages
+    Text same_roll_notif(font, "Same numbers! Roll again.", sf::Color::Black, 48, sf::Vector2f(250.f,250.f));
+    Text jail_notif(font, "GO TO JAIL.", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
 
     // Main loop
     while (window.isOpen())
@@ -145,7 +149,6 @@ int main()
                 window.close();
             if (event.type == sf::Event::MouseButtonPressed && canClick)
             {
-                diceRolled = true;
                 canClick = false;
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 //roll the dice on a dice click
@@ -156,6 +159,11 @@ int main()
                     dice.roll_result = dice.die1+dice.die2;
                     dice.roll_display = dice.roll_result;
                     same_roll = dice.die1==dice.die2;
+
+                    if (player1_turn)
+                        dice.dice_info.setString("Player " + std::to_string(1) + ": " + std::to_string(dice.die1) + " and " + std::to_string(dice.die2));
+                    else
+                        dice.dice_info.setString("Player " + std::to_string(2) + ": " + std::to_string(dice.die1) + " and " + std::to_string(dice.die2));
                 }
             }
         }
@@ -204,14 +212,10 @@ int main()
             dice.roll_result = 0;
         }
 
-        if (diceRolled) {
-            dice.dice_info.setString("Dice Roll: " + std::to_string(dice.die1) + " and " + std::to_string(dice.die2));
-        } else {
-            dice.dice_info.setString("Roll the dice!");
-        }
 
         window.clear();
         window.draw(sprite); // Draw the scaled sprite of the game board
+        if (same_roll) window.draw(same_roll_notif.content);
         window.draw(P1.shape);
         window.draw(P2.shape);
         window.draw(dice.shape);
