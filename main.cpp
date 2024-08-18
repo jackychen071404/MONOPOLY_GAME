@@ -178,10 +178,12 @@ int main()
     //turns and dice rolling logic
     bool player1_turn = true;
     bool player2_turn = false;
+    bool is_buying_phase = false;
     bool same_roll = false;
 
     //various game messages
     Text same_roll_notif(font, "Same numbers! Roll again.", sf::Color::Black, 48, sf::Vector2f(250.f,250.f));
+    Text buying_phase(font, "BUY?             AUCTION?", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
     Text jail_notif(font, "GO TO JAIL.", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
 
     // Main loop
@@ -261,6 +263,7 @@ int main()
         window.clear();
         window.draw(sprite); // Draw the scaled sprite of the game board
         if (same_roll) window.draw(same_roll_notif.content);
+        window.draw(buying_phase.content);
         window.draw(P1.shape);
         window.draw(P2.shape);
         window.draw(dice.shape);
