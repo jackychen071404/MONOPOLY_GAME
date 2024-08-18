@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Dice.h"
 #include "Text.h"
+#include "Square.h"
 
 int main()
 {
