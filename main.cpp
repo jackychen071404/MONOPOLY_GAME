@@ -31,10 +31,6 @@ int main()
     }
 
     //player 1 circle representer
-    sf::CircleShape p1(10);
-    //p1.setFillColor(sf::Color::Red);
-    //p1.setPosition(890.f, 910.f); 
-    int pos1 = 0;
     sf::Vector2f positions1[40] = {
         sf::Vector2f(890.f, 910.f),
         sf::Vector2f(780.f, 910.f),
@@ -77,15 +73,9 @@ int main()
         sf::Vector2f(890.f, 738.f),
         sf::Vector2f(890.f, 822.f)
     };
-    //p1.setOutlineColor(sf::Color::Black);                              
-    //p1.setOutlineThickness(1.f);
-    Player P1(sf::Color::Red, sf::Vector2f(890.f, 910.f), positions1);
+    Player P1(sf::Color::Red, sf::Vector2f(890.f, 910.f), positions1, font, 1, sf::Vector2f(150, 750));
 
     //player 2 circle representer
-    sf::CircleShape p2(10);
-    p2.setFillColor(sf::Color::Blue);
-    p2.setPosition(930.f,910.f);
-    int pos2 = 0;
     sf::Vector2f positions2[40] = {
         sf::Vector2f(930.f, 910.f),
         sf::Vector2f(800.f, 910.f),
@@ -128,8 +118,7 @@ int main()
         sf::Vector2f(920.f, 738.f),
         sf::Vector2f(920.f, 822.f)
     };
-    p2.setOutlineColor(sf::Color::Black);                              
-    p2.setOutlineThickness(1.f);
+    Player P2(sf::Color::Blue, sf::Vector2f(930.f,910.f), positions2, font, 2, sf::Vector2f(150, 800));
 
     //roll dice button
     sf::RectangleShape dice;
@@ -159,20 +148,6 @@ int main()
     bool player1_turn = true;
     bool player2_turn = false;
 
-    //money
-    sf::Text p1_money;
-    p1_money.setFont(font);
-    p1_money.setString("Player 1: $1500");
-    p1_money.setCharacterSize(48);
-    p1_money.setFillColor(sf::Color::Red);
-    p1_money.setPosition(150, 750);
-    sf::Text p2_money;
-    p2_money.setFont(font);
-    p2_money.setString("Player 2: $1500");
-    p2_money.setCharacterSize(48);
-    p2_money.setFillColor(sf::Color::Blue);
-    p2_money.setPosition(150, 800);
-
     // Main loop
     while (window.isOpen())
     {
@@ -200,14 +175,14 @@ int main()
         if (roll_indices < roll_result) {
             if (player1_turn) {
                 if (elapsed1.asMilliseconds() >= 100) {
-                    if (pos1 == 39) { //making sure to loop back
-                        pos1 = 0;
+                    if (P1.currentPos == 39) { //making sure to loop back
+                        P1.currentPos = 0;
                     }
                     else {
-                        pos1++;
+                        P1.currentPos++;
                     }
                     roll_indices++;
-                    P1.shape.setPosition(P1.position_coordinates[pos1]);
+                    P1.shape.setPosition(P1.position_coordinates[P1.currentPos]);
                     if (roll_indices == roll_result) { //this indicates the turn is over, when destination is reached
                         player1_turn = false;
                         player2_turn = true;
@@ -217,14 +192,14 @@ int main()
             }
             else if (player2_turn) {
                 if (elapsed1.asMilliseconds() >= 100) {
-                    if (pos2 == 39) {
-                        pos2 = 0;
+                    if (P2.currentPos == 39) {
+                        P2.currentPos = 0;
                     }
                     else {
-                        pos2++;
+                        P2.currentPos++;
                     }
                     roll_indices++;
-                    p2.setPosition(positions2[pos2]);
+                    P2.shape.setPosition(positions2[P2.currentPos]);
                     if (roll_indices == roll_result) {
                         player1_turn = true;
                         player2_turn = false;
@@ -243,11 +218,11 @@ int main()
         window.clear();
         window.draw(sprite); // Draw the scaled sprite
         window.draw(P1.shape);
-        window.draw(p2);
+        window.draw(P2.shape);
         window.draw(dice);
         window.draw(dice_info);
-        window.draw(p1_money);
-        window.draw(p2_money);
+        window.draw(P1.money);
+        window.draw(P2.money);
         window.display();
     }
 

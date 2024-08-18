@@ -6,9 +6,11 @@
 
 class Player {
     public: 
-        Player(sf::Color fill_color, sf::Vector2f startPos, const sf::Vector2f positions[]);
+        Player(sf::Color fill_color, sf::Vector2f startPos, const sf::Vector2f positions[], const sf::Font& font, int player_no, sf::Vector2f moneyPos);
         sf::CircleShape shape;
         sf::Vector2f* position_coordinates;
+        int currentPos;
+        sf::Text money;
 
     private: 
 };
