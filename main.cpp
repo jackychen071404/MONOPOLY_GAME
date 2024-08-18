@@ -4,6 +4,7 @@
 #include <random>
 #include <cstdlib>
 #include "Player.h"
+#include "Dice.h"
 
 int main()
 {
@@ -24,13 +25,12 @@ int main()
     // Parameters: handle, x position, y position, width, height, flags
     SetWindowPos(hwnd, HWND_TOP, 100, 0, windowSize.x, windowSize.y, SWP_NOSIZE | SWP_NOZORDER);
 
-    //font
-    sf::Font font;
+    sf::Font font; //font
     if (!font.loadFromFile("C:/Windows/fonts/cambriab.ttf")) {
         throw std::invalid_argument("no font found.");
     }
 
-    //player 1 circle representer
+    //player objects: color, init position, coordinate of positions on board, font, player #, position of money text 
     sf::Vector2f positions1[40] = {
         sf::Vector2f(890.f, 910.f),
         sf::Vector2f(780.f, 910.f),
@@ -74,8 +74,6 @@ int main()
         sf::Vector2f(890.f, 822.f)
     };
     Player P1(sf::Color::Red, sf::Vector2f(890.f, 910.f), positions1, font, 1, sf::Vector2f(150, 750));
-
-    //player 2 circle representer
     sf::Vector2f positions2[40] = {
         sf::Vector2f(930.f, 910.f),
         sf::Vector2f(800.f, 910.f),
@@ -120,31 +118,19 @@ int main()
     };
     Player P2(sf::Color::Blue, sf::Vector2f(930.f,910.f), positions2, font, 2, sf::Vector2f(150, 800));
 
-    //roll dice button
-    sf::RectangleShape dice;
-    dice.setSize(sf::Vector2f(100, 50));
-    dice.setPosition(700,200);
-    dice.setFillColor(sf::Color::Red);
+    Dice dice(font); //dice object
 
-    //two die
-    int die1;
-    int die2;
-    int roll_display = 0;
-    int roll_result = 0;
-    int roll_indices = 0;
-    std::random_device rd;
-    std::mt19937 gen(rd()); //mt19937 is a cpp thing that mersenne twister
+    std::random_device rd; //random number generator
+    std::mt19937 gen(rd()); //mt19937 is mersenne twister algorithm
     std::uniform_int_distribution<> dis(1, 6);
-    sf::Text dice_info;
-    dice_info.setFont(font);
-    dice_info.setString("Roll Result");
-    dice_info.setCharacterSize(48);
-    dice_info.setFillColor(sf::Color::Red);
-    dice_info.setPosition(350, 150);
 
-    //clock for animation
-    sf::Clock clock; 
-    bool canClick = true;
+    sf::Clock clock; //clock for animation
+    
+    //booleans for game states. Is the dice rolling? Is it buying phase? Etc.
+    bool canClick = true; 
+
+    //turns and dice rolling logic
+    bool diceRolled = false;
     bool player1_turn = true;
     bool player2_turn = false;
     bool same_roll = false;
@@ -159,23 +145,23 @@ int main()
                 window.close();
             if (event.type == sf::Event::MouseButtonPressed && canClick)
             {
+                diceRolled = true;
                 canClick = false;
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 //roll the dice on a dice click
-                if (dice.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
+                if (dice.shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
                 {
-                    die1 = dis(gen);
-                    die2 = dis(gen);
-                    //std::cout << die1 << " " << die2 << std::endl;
-                    roll_result = die1+die2;
-                    roll_display = roll_result;
-                    same_roll = die1==die2;
+                    dice.die1 = dis(gen);
+                    dice.die2 = dis(gen);
+                    dice.roll_result = dice.die1+dice.die2;
+                    dice.roll_display = dice.roll_result;
+                    same_roll = dice.die1==dice.die2;
                 }
             }
         }
 
         sf::Time elapsed1 = clock.getElapsedTime();
-        if (roll_indices < roll_result) {
+        if (dice.roll_indices < dice.roll_result) {
             if (player1_turn) {
                 if (elapsed1.asMilliseconds() >= 100) {
                     if (P1.currentPos == 39) { //making sure to loop back
@@ -184,9 +170,9 @@ int main()
                     else {
                         P1.currentPos++;
                     }
-                    roll_indices++;
+                    dice.roll_indices++;
                     P1.shape.setPosition(P1.position_coordinates[P1.currentPos]);
-                    if (roll_indices == roll_result && !same_roll) { //this indicates the turn is over, when destination is reached
+                    if (dice.roll_indices == dice.roll_result && !same_roll) { //this indicates the turn is over, when destination is reached
                         player1_turn = false;
                         player2_turn = true;
                     }
@@ -201,9 +187,9 @@ int main()
                     else {
                         P2.currentPos++;
                     }
-                    roll_indices++;
+                    dice.roll_indices++;
                     P2.shape.setPosition(positions2[P2.currentPos]);
-                    if (roll_indices == roll_result && !same_roll) {
+                    if (dice.roll_indices == dice.roll_result && !same_roll) {
                         player1_turn = true;
                         player2_turn = false;
                     }
@@ -212,18 +198,22 @@ int main()
             }
         } else {
             canClick = true;
-            roll_indices = 0;
-            roll_result = 0;
+            dice.roll_indices = 0;
+            dice.roll_result = 0;
         }
 
-        dice_info.setString(std::to_string(roll_display));
+        if (diceRolled) {
+            dice.dice_info.setString("Dice Roll: " + std::to_string(dice.die1) + " and " + std::to_string(dice.die2));
+        } else {
+            dice.dice_info.setString("Roll the dice!");
+        }
 
         window.clear();
-        window.draw(sprite); // Draw the scaled sprite
+        window.draw(sprite); // Draw the scaled sprite of the game board
         window.draw(P1.shape);
         window.draw(P2.shape);
-        window.draw(dice);
-        window.draw(dice_info);
+        window.draw(dice.shape);
+        window.draw(dice.dice_info);
         window.draw(P1.money);
         window.draw(P2.money);
         window.display();
