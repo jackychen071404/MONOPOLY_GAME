@@ -122,6 +122,50 @@ int main()
 
     Dice dice(font); //dice object
 
+    //array of Squares
+    Square squares[40] = {
+        Square(0, 0, "GO!", 0), //go
+        Square(1, 60, "brown", 0), //New Zealand
+        Square(2, 0, "shipment", 0),
+        Square(3, 60, "brown", 0), //Australia
+        Square(4, 200, "fee", 0),
+        Square(5, 200, "airport", 0),
+        Square(6, 100, "cyan", 0),
+        Square(7, 0, "god's plan", 0),
+        Square(8, 100, "cyan", 0),
+        Square(9, 120, "cyan", 0),
+        Square(10,0,"free", 0),
+        Square(11, 140, "pink", 0),
+        Square(12, 150, "util", 0),
+        Square(13, 140, "pink", 0),
+        Square(14, 160, "pink", 0),
+        Square(15, 200, "airport", 0),
+        Square(16, 180, "orange", 0),
+        Square(17, 0, "shipment", 0),
+        Square(18, 180, "orange", 0),
+        Square(19, 200, "orange", 0),
+        Square(20, 0, "IMF", 0),
+        Square(21, 220, "red", 0),
+        Square(22, 0, "god's plan", 0),
+        Square(23, 220, "red", 0),
+        Square(24, 240, "red", 0),
+        Square(25, 200, "airport", 0),
+        Square(26, 260, "yellow", 0),
+        Square(27, 260, "yellow", 0),
+        Square(28, 150, "util", 0),
+        Square(29, 280, "yellow", 0),
+        Square(30, 0, "jail", 0),
+        Square(31, 300, "green", 0),
+        Square(32, 300, "green", 0),
+        Square(33, 0, "shipment", 0),
+        Square(34, 320, "green", 0),
+        Square(35, 200, "airport", 0),
+        Square(36, 0, "god's plan", 0),
+        Square(37, 350, "blue", 0),
+        Square(38, 100, "fee", 0),
+        Square(39, 400, "blue", 0),
+    };
+
     std::random_device rd; //random number generator
     std::mt19937 gen(rd()); //mt19937 is mersenne twister algorithm
     std::uniform_int_distribution<> dis(1, 6);
