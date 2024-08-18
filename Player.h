@@ -10,9 +10,12 @@ class Player {
         sf::CircleShape shape;
         sf::Vector2f* position_coordinates;
         int currentPos;
-        sf::Text money;
+        int money;
+        sf::Text money_text;
 
+        void update_money(bool add_or_cut, int amt);
     private: 
+        int player_no;
 };
 
 #endif

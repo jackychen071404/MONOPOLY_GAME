@@ -166,6 +166,7 @@ int main()
                 if (elapsed1.asMilliseconds() >= 100) {
                     if (P1.currentPos == 39) { //making sure to loop back
                         P1.currentPos = 0;
+                        P1.update_money(1,200);
                     }
                     else {
                         P1.currentPos++;
@@ -183,6 +184,7 @@ int main()
                 if (elapsed1.asMilliseconds() >= 100) {
                     if (P2.currentPos == 39) {
                         P2.currentPos = 0;
+                        P2.update_money(1,200);
                     }
                     else {
                         P2.currentPos++;
@@ -214,8 +216,8 @@ int main()
         window.draw(P2.shape);
         window.draw(dice.shape);
         window.draw(dice.dice_info);
-        window.draw(P1.money);
-        window.draw(P2.money);
+        window.draw(P1.money_text);
+        window.draw(P2.money_text);
         window.display();
     }
 
