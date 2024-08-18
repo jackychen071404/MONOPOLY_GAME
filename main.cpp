@@ -147,6 +147,7 @@ int main()
     bool canClick = true;
     bool player1_turn = true;
     bool player2_turn = false;
+    bool same_roll = false;
 
     // Main loop
     while (window.isOpen())
@@ -165,8 +166,10 @@ int main()
                 {
                     die1 = dis(gen);
                     die2 = dis(gen);
+                    //std::cout << die1 << " " << die2 << std::endl;
                     roll_result = die1+die2;
                     roll_display = roll_result;
+                    same_roll = die1==die2;
                 }
             }
         }
@@ -183,7 +186,7 @@ int main()
                     }
                     roll_indices++;
                     P1.shape.setPosition(P1.position_coordinates[P1.currentPos]);
-                    if (roll_indices == roll_result) { //this indicates the turn is over, when destination is reached
+                    if (roll_indices == roll_result && !same_roll) { //this indicates the turn is over, when destination is reached
                         player1_turn = false;
                         player2_turn = true;
                     }
@@ -200,7 +203,7 @@ int main()
                     }
                     roll_indices++;
                     P2.shape.setPosition(positions2[P2.currentPos]);
-                    if (roll_indices == roll_result) {
+                    if (roll_indices == roll_result && !same_roll) {
                         player1_turn = true;
                         player2_turn = false;
                     }

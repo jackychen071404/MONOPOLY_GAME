@@ -14,7 +14,6 @@ Player::Player(sf::Color fill_color, sf::Vector2f startPos, const sf::Vector2f p
     money.setCharacterSize(48);
     money.setFillColor(fill_color);
     money.setPosition(moneyPos);
-    std::cout << "Money Text: " << money.getString().toAnsiString() << std::endl;
     for (int i = 0; i < 40; i++) {
         position_coordinates[i] = positions[i];
     }
