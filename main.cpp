@@ -7,6 +7,7 @@
 #include "Dice.h"
 #include "Text.h"
 #include "Square.h"
+#include "GameStates.h"
 
 int main()
 {
@@ -187,6 +188,8 @@ int main()
     Text auction_phase(font, "AUCTION?", sf::Color::Black, 48, sf::Vector2f(600.f,350.f));
     Text jail_notif(font, "GO TO JAIL.", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
 
+    GamePhase currentPhase = GamePhase::player1_turn;
+    
     // Main loop
     while (window.isOpen())
     {
