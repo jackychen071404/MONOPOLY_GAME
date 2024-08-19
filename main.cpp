@@ -221,9 +221,11 @@ int main()
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 if (buying_phase.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     if (player1_turn) {
+                        P1.update_money(0,squares[P1.currentPos].getPrice());
                         player1_turn = false;
                         player2_turn = true;
                     } else if (player2_turn) {
+                        P2.update_money(0,squares[P2.currentPos].getPrice());
                         player1_turn = true;
                         player2_turn = false;
                     }
