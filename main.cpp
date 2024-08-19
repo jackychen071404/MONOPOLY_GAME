@@ -222,10 +222,14 @@ int main()
                 if (buying_phase.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     if (player1_turn) {
                         P1.update_money(0,squares[P1.currentPos].getPrice());
+                        squares[P1.currentPos].setPlayerNo(1);
+                        squares[P1.currentPos].setBuyable(0);
                         player1_turn = false;
                         player2_turn = true;
                     } else if (player2_turn) {
                         P2.update_money(0,squares[P2.currentPos].getPrice());
+                        squares[P2.currentPos].setPlayerNo(2);
+                        squares[P1.currentPos].setBuyable(0);
                         player1_turn = true;
                         player2_turn = false;
                     }
