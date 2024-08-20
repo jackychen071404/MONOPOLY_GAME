@@ -7,9 +7,9 @@ enum class PlayerTurn {
 };
 
 enum class GamePhase {
+    WaitForDice,
     RollingDice,
     is_buying_phase,
-    Moving,
 };
 
 #endif // GAMESTATES_H
