@@ -1,11 +1,14 @@
 #ifndef GAMESTATES_H
 #define GAMESTATES_H
 
-enum class GamePhase {
-    RollingDice,
+enum class PlayerTurn {
     player1_turn,
     player2_turn,
-    BuyingPhase,
+};
+
+enum class GamePhase {
+    RollingDice,
+    is_buying_phase,
     Moving,
 };
 

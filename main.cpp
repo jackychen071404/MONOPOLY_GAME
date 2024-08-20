@@ -188,7 +188,8 @@ int main()
     Text auction_phase(font, "AUCTION?", sf::Color::Black, 48, sf::Vector2f(600.f,350.f));
     Text jail_notif(font, "GO TO JAIL.", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
 
-    GamePhase currentPhase = GamePhase::player1_turn;
+    //GamePhase currentPhase = GamePhase::player1_turn;
+    PlayerTurn currentTurn = PlayerTurn::player1_turn;
     
     // Main loop
     while (window.isOpen())
@@ -210,7 +211,7 @@ int main()
                     dice.roll_display = dice.roll_result;
                     same_roll = dice.die1==dice.die2;
 
-                    if (player1_turn)
+                    if (currentTurn == PlayerTurn::player1_turn)
                         dice.dice_info.setString("Player " + std::to_string(1) + ": " + std::to_string(dice.die1) + " and " + std::to_string(dice.die2));
                     else
                         dice.dice_info.setString("Player " + std::to_string(2) + ": " + std::to_string(dice.die1) + " and " + std::to_string(dice.die2));
@@ -220,18 +221,16 @@ int main()
                 //std::cout << "hi" << std::endl;
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 if (buying_phase.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                    if (player1_turn) {
+                    if (currentTurn == PlayerTurn::player1_turn) {
                         P1.update_money(0,squares[P1.currentPos].getPrice());
                         squares[P1.currentPos].setPlayerNo(1);
                         squares[P1.currentPos].setBuyable(0);
-                        player1_turn = false;
-                        player2_turn = true;
-                    } else if (player2_turn) {
+                        currentTurn = PlayerTurn::player2_turn;
+                    } else if (currentTurn == PlayerTurn::player2_turn) {
                         P2.update_money(0,squares[P2.currentPos].getPrice());
                         squares[P2.currentPos].setPlayerNo(2);
                         squares[P1.currentPos].setBuyable(0);
-                        player1_turn = true;
-                        player2_turn = false;
+                        currentTurn = PlayerTurn::player1_turn;
                     }
                     is_buying_phase = false;
                 }
@@ -240,7 +239,7 @@ int main()
 
         sf::Time elapsed1 = clock.getElapsedTime();
         if (dice.roll_indices < dice.roll_result) {
-            if (player1_turn) {
+            if (currentTurn == PlayerTurn::player1_turn) {
                 if (elapsed1.asMilliseconds() >= 100) {
                     if (P1.currentPos == 39) { //making sure to loop back
                         P1.currentPos = 0;
@@ -256,13 +255,13 @@ int main()
                             is_buying_phase = true;
                         }
                         else {
-                            player1_turn = false;player2_turn = true;
+                            currentTurn = PlayerTurn::player2_turn;
                         }
                     }
                     clock.restart();
                 }
             }
-            else if (player2_turn) {
+            else if (currentTurn == PlayerTurn::player2_turn) {
                 if (elapsed1.asMilliseconds() >= 100) {
                     if (P2.currentPos == 39) {
                         P2.currentPos = 0;
@@ -277,7 +276,7 @@ int main()
                         if (squares[P2.currentPos].getBuyable()) {
                             is_buying_phase = true;
                         } else {
-                            player1_turn = true;player2_turn = false;
+                            currentTurn = PlayerTurn::player1_turn;
                         }
                     }
                     clock.restart();
