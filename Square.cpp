@@ -1,9 +1,13 @@
 #include "Square.h"
 
-Square::Square(const unsigned int num, const unsigned int price,  const std::string &type, bool buyable, unsigned int player_no) 
+Square::Square(const unsigned int num, const unsigned int price,  const std::string &type, bool buyable, unsigned int player_no, sf::Vector2f circlePosition) 
     : num(num), houses(0), price(price), owned(0), type(type), buyable(buyable), player_no(0)
 {
-
+    bought_circle.setRadius(30);
+    bought_circle.setPosition(circlePosition);
+    bought_circle.setFillColor(sf::Color::Transparent);
+    bought_circle.setOutlineColor(sf::Color::Transparent);
+    bought_circle.setOutlineThickness(2.f);
 }
 
 unsigned int Square::getNum() const {

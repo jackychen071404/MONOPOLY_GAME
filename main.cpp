@@ -125,46 +125,46 @@ int main()
 
     //array of Squares
     Square squares[40] = {
-        Square(0, 0, "GO!", 0, 0), //go
-        Square(1, 60, "brown", 1, 0), //New Zealand
-        Square(2, 0, "shipment", 0,0),
-        Square(3, 60, "brown", 1, 0), //Australia
-        Square(4, 200, "fee", 0,0),
-        Square(5, 200, "airport", 1, 0),
-        Square(6, 100, "cyan", 1, 0),
-        Square(7, 0, "god's plan", 0,0),
-        Square(8, 100, "cyan", 1, 0),
-        Square(9, 120, "cyan", 1, 0),
-        Square(10,0,"free", 0,0),
-        Square(11, 140, "pink", 1, 0),
-        Square(12, 150, "util", 1,0),
-        Square(13, 140, "pink", 1, 0),
-        Square(14, 160, "pink", 1, 0),
-        Square(15, 200, "airport", 1, 0),
-        Square(16, 180, "orange", 1, 0),
-        Square(17, 0, "shipment", 0,0),
-        Square(18, 180, "orange", 1, 0),
-        Square(19, 200, "orange", 1, 0),
-        Square(20, 0, "IMF", 0,0),
-        Square(21, 220, "red", 1, 0),
-        Square(22, 0, "god's plan", 0,0),
-        Square(23, 220, "red", 1, 0),
-        Square(24, 240, "red", 1, 0),
-        Square(25, 200, "airport", 1,0),
-        Square(26, 260, "yellow", 1, 0),
-        Square(27, 260, "yellow", 1, 0),
-        Square(28, 150, "util", 1,0),
-        Square(29, 280, "yellow", 1, 0),
-        Square(30, 0, "jail", 0,0),
-        Square(31, 300, "green", 1, 0),
-        Square(32, 300, "green", 1, 0),
-        Square(33, 0, "shipment", 0,0),
-        Square(34, 320, "green", 1, 0),
-        Square(35, 200, "airport", 1, 0),
-        Square(36, 0, "god's plan", 0,0),
-        Square(37, 350, "blue", 1, 0),
-        Square(38, 100, "fee", 0,0),
-        Square(39, 400, "blue", 1, 0),
+        Square(0, 0, "GO!", 0, 0, positions1[0]), //go
+        Square(1, 60, "brown", 1, 0,positions1[1]), //New Zealand
+        Square(2, 0, "shipment", 0,0,positions1[2]),
+        Square(3, 60, "brown", 1, 0,positions1[3]), //Australia
+        Square(4, 200, "fee", 0,0,positions1[4]),
+        Square(5, 200, "airport", 1, 0,positions1[5]),
+        Square(6, 100, "cyan", 1, 0,positions1[6]),
+        Square(7, 0, "god's plan", 0,0,positions1[7]),
+        Square(8, 100, "cyan", 1, 0,positions1[8]),
+        Square(9, 120, "cyan", 1, 0,positions1[9]),
+        Square(10,0,"free", 0,0,positions1[10]),
+        Square(11, 140, "pink", 1, 0,positions1[11]),
+        Square(12, 150, "util", 1,0,positions1[12]),
+        Square(13, 140, "pink", 1, 0,positions1[13]),
+        Square(14, 160, "pink", 1, 0,positions1[14]),
+        Square(15, 200, "airport", 1, 0,positions1[15]),
+        Square(16, 180, "orange", 1, 0,positions1[16]),
+        Square(17, 0, "shipment", 0,0,positions1[17]),
+        Square(18, 180, "orange", 1, 0,positions1[18]),
+        Square(19, 200, "orange", 1, 0,positions1[19]),
+        Square(20, 0, "IMF", 0,0,positions1[20]),
+        Square(21, 220, "red", 1, 0,positions1[21]),
+        Square(22, 0, "god's plan", 0,0,positions1[22]),
+        Square(23, 220, "red", 1, 0,positions1[23]),
+        Square(24, 240, "red", 1, 0,positions1[24]),
+        Square(25, 200, "airport", 1,0,positions1[25]),
+        Square(26, 260, "yellow", 1, 0,positions1[26]),
+        Square(27, 260, "yellow", 1, 0,positions1[27]),
+        Square(28, 150, "util", 1,0,positions1[28]),
+        Square(29, 280, "yellow", 1, 0,positions1[29]),
+        Square(30, 0, "jail", 0,0,positions1[30]),
+        Square(31, 300, "green", 1, 0,positions1[31]),
+        Square(32, 300, "green", 1, 0,positions1[32]),
+        Square(33, 0, "shipment", 0,0,positions1[33]),
+        Square(34, 320, "green", 1, 0,positions1[34]),
+        Square(35, 200, "airport", 1, 0,positions1[35]),
+        Square(36, 0, "god's plan", 0,0,positions1[36]),
+        Square(37, 350, "blue", 1, 0,positions1[37]),
+        Square(38, 100, "fee", 0,0,positions1[38]),
+        Square(39, 400, "blue", 1, 0,positions1[39]),
     };
 
     std::random_device rd; //random number generator
@@ -175,7 +175,6 @@ int main()
     
     //booleans for game states. Is the dice rolling? Is it buying phase? Etc.
     bool canRoll = true; 
-    bool is_buying_phase = false;
     bool same_roll = false;
 
     //various game messages
@@ -186,7 +185,7 @@ int main()
 
     GamePhase currentPhase = GamePhase::WaitForDice;
     PlayerTurn currentTurn = PlayerTurn::player1_turn;
-    
+
     // Main loop
     while (window.isOpen())
     {
@@ -194,13 +193,13 @@ int main()
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed) window.close();
-            if (event.type == sf::Event::MouseButtonPressed && canRoll)
+            if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::WaitForDice)
             {
-                canRoll = false;
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 //roll the dice on a dice click
                 if (dice.shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
                 {
+                    currentPhase = GamePhase::RollingDice;
                     dice.die1 = dis(gen);
                     dice.die2 = dis(gen);
                     dice.roll_result = dice.die1+dice.die2;
@@ -214,7 +213,6 @@ int main()
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::is_buying_phase) {
-                //std::cout << "hi" << std::endl;
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 if (buying_phase.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     if (currentTurn == PlayerTurn::player1_turn) {
@@ -225,18 +223,18 @@ int main()
                     } else if (currentTurn == PlayerTurn::player2_turn) {
                         P2.update_money(0,squares[P2.currentPos].getPrice());
                         squares[P2.currentPos].setPlayerNo(2);
-                        squares[P1.currentPos].setBuyable(0);
+                        squares[P2.currentPos].setBuyable(0);
                         currentTurn = PlayerTurn::player1_turn;
                     }
                     currentPhase = GamePhase::WaitForDice;
                 }
             }
         }
-
+        std::cout << squares[P1.currentPos].getPlayerNo() << std::endl;
         sf::Time elapsed1 = clock.getElapsedTime();
         if (dice.roll_indices < dice.roll_result) {
-            currentPhase = GamePhase::RollingDice;
             if (currentTurn == PlayerTurn::player1_turn) {
+    
                 if (elapsed1.asMilliseconds() >= 100) {
                     if (P1.currentPos == 39) { //making sure to loop back
                         P1.currentPos = 0;
@@ -282,11 +280,11 @@ int main()
                 }
             }
         } else {
-            canRoll = true;
+            if (same_roll) currentPhase = GamePhase::WaitForDice;
             dice.roll_indices = 0;
             dice.roll_result = 0;
         }
-
+        //std::cout << to_string(currentPhase) << std::endl;
 
         window.clear();
         window.draw(sprite); // Draw the scaled sprite of the game board
@@ -294,7 +292,11 @@ int main()
         if (currentPhase == GamePhase::is_buying_phase) {
             window.draw(buying_phase.content);
             window.draw(auction_phase.content);
-            canRoll = false;
+        }
+        for (int i = 0; i < 40; i++) {
+            if (squares[i].getPlayerNo() == 1) squares[i].bought_circle.setOutlineColor(sf::Color::Red);
+            if (squares[i].getPlayerNo() == 2) squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
+            if (!squares[i].getBuyable()) window.draw(squares[i].bought_circle);
         }
         window.draw(P1.shape);
         window.draw(P2.shape);
