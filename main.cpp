@@ -181,7 +181,9 @@ int main()
     Text same_roll_notif(font, "Same numbers! Roll again.", sf::Color::Black, 48, sf::Vector2f(250.f,250.f));
     Text buying_phase(font, "BUY?", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
     Text auction_phase(font, "AUCTION?", sf::Color::Black, 48, sf::Vector2f(600.f,350.f));
+    Text remortgage(font, "REMORTGAGE?", sf::Color::Black, 48, sf::Vector2f(500.f,600.f));
     Text mortgage(font, "MORTGAGE?", sf::Color::Black, 48, sf::Vector2f(500.f,700.f));
+    Text end_mortgage(font, "END MORTGAGE", sf::Color::Black, 48, sf::Vector2f(700.f,700.f));
     Text jail_notif(font, "GO TO JAIL.", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
     Text p1_notif(font, "+$", sf::Color::Black, 48, sf::Vector2f(600,750));
     Text p2_notif(font, "+$", sf::Color::Black, 48, sf::Vector2f(600,800));
@@ -210,7 +212,6 @@ int main()
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::WaitForDice)
             {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                //roll the dice on a dice click
                 if (dice.shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
                 {
                     currentPhase = GamePhase::RollingDice;
@@ -233,6 +234,53 @@ int main()
                     if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     currentPhase = GamePhase::WaitForDice;
+                }   else if (mortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    currentPhase = GamePhase::mortgaging;
+                }   else if (remortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    currentPhase = GamePhase::remortgaging;
+                }
+            }
+            if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::mortgaging) {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if (end_mortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    currentPhase = GamePhase::is_buying_phase;
+                } else {
+                    for (int i = 0; i < 40; i++) {
+                        if (squares[i].getPlayerNo() == currentPlayer->getPlayerNo()) {
+                            if (squares[i].bought_circle.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                                if (currentTurn == PlayerTurn::player1_turn) squares[i].setPlayerNo(3);
+                                else squares[i].setPlayerNo(4);
+                                squares[i].bought_circle.setOutlineColor(sf::Color::Green); //mortgaged
+                                currentPlayer->update_money(1, squares[i].getPrice() * .5);
+                            }
+                        }
+                    }
+                }
+            }
+            if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::remortgaging) {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if (end_mortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    currentPhase = GamePhase::is_buying_phase;
+                } else {
+                    for (int i = 0; i < 40; i++) {
+                        if (currentPlayer->getPlayerNo() == 1) {
+                            if (squares[i].getPlayerNo() == 3) {
+                                if (squares[i].bought_circle.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                                    currentPlayer->update_money(0, squares[i].getPrice() * .5 * 1.1);
+                                    squares[i].bought_circle.setOutlineColor(sf::Color::Red);
+                                    squares[i].setPlayerNo(1);
+                                }
+                            }
+                        } else {
+                            if (squares[i].getPlayerNo() == 4) {
+                                if (squares[i].bought_circle.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                                    currentPlayer->update_money(0, squares[i].getPrice() * .5 * 1.1);
+                                    squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
+                                    squares[i].setPlayerNo(2);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -254,7 +302,7 @@ int main()
                         currentPhase = GamePhase::is_buying_phase;
                     }
                     else {
-                        if (squares[currentPlayer->currentPos].getPlayerNo() != currentPlayer->getPlayerNo()) {
+                        if (squares[currentPlayer->currentPos].getPlayerNo() != currentPlayer->getPlayerNo() && squares[currentPlayer->currentPos].bought_circle.getOutlineColor() != sf::Color::Green) {
                             currentPlayer->update_money(0, squares[currentPlayer->currentPos].getRent0());
                             otherPlayer->update_money(1, squares[currentPlayer->currentPos].getRent0());
                         } 
@@ -281,6 +329,9 @@ int main()
             window.draw(buying_phase.content);
             window.draw(auction_phase.content);
             window.draw(mortgage.content);
+            window.draw(remortgage.content);
+        } else if (currentPhase == GamePhase::mortgaging || currentPhase == GamePhase::remortgaging) {
+            window.draw(end_mortgage.content);
         }
         for (int i = 0; i < 40; i++) {
             if (squares[i].getPlayerNo() == 1) squares[i].bought_circle.setOutlineColor(sf::Color::Red);

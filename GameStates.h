@@ -12,6 +12,7 @@ enum class GamePhase {
     is_buying_phase,
     auctioning,
     mortgaging,
+    remortgaging,
 };
 std::string to_string(GamePhase phase);
 
