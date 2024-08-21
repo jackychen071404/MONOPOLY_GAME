@@ -5,9 +5,16 @@
 
 class Square {
     public:
-        Square(const unsigned int num, const unsigned int price, const std::string &type, bool buyable, unsigned int player_no, sf::Vector2f circlePosition);
+        Square(const unsigned int num, const unsigned int price, const unsigned int rent0, const unsigned int rent1, const unsigned int rent2, const unsigned int rent3, const unsigned int rent4, const unsigned int rent5, 
+        const std::string &type, bool buyable, unsigned int player_no, sf::Vector2f circlePosition);
         unsigned int getNum() const;
         unsigned int getPrice() const;
+        unsigned int getRent0() const;
+        unsigned int getRent1() const;
+        unsigned int getRent2() const;
+        unsigned int getRent3() const;
+        unsigned int getRent4() const;
+        unsigned int getRent5() const;
         std::string getType() const;
         bool getBuyable() const;
         void setBuyable(bool truth);
@@ -20,6 +27,12 @@ class Square {
     private:
         unsigned int num;
         unsigned int price;
+        unsigned int rent0;
+        unsigned int rent1;
+        unsigned int rent2;
+        unsigned int rent3;
+        unsigned int rent4;
+        unsigned int rent5;
         std::string type;
         unsigned int player_no;
         bool buyable;

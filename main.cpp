@@ -125,46 +125,46 @@ int main()
 
     //array of Squares
     Square squares[40] = {
-        Square(0, 0, "GO!", 0, 0, positions1[0]), //go
-        Square(1, 60, "brown", 1, 0,positions1[1]), //New Zealand
-        Square(2, 0, "shipment", 0,0,positions1[2]),
-        Square(3, 60, "brown", 1, 0,positions1[3]), //Australia
-        Square(4, 200, "fee", 0,0,positions1[4]),
-        Square(5, 200, "airport", 1, 0,positions1[5]),
-        Square(6, 100, "cyan", 1, 0,positions1[6]),
-        Square(7, 0, "god's plan", 0,0,positions1[7]),
-        Square(8, 100, "cyan", 1, 0,positions1[8]),
-        Square(9, 120, "cyan", 1, 0,positions1[9]),
-        Square(10,0,"free", 0,0,positions1[10]),
-        Square(11, 140, "pink", 1, 0,positions1[11]),
-        Square(12, 150, "util", 1,0,positions1[12]),
-        Square(13, 140, "pink", 1, 0,positions1[13]),
-        Square(14, 160, "pink", 1, 0,positions1[14]),
-        Square(15, 200, "airport", 1, 0,positions1[15]),
-        Square(16, 180, "orange", 1, 0,positions1[16]),
-        Square(17, 0, "shipment", 0,0,positions1[17]),
-        Square(18, 180, "orange", 1, 0,positions1[18]),
-        Square(19, 200, "orange", 1, 0,positions1[19]),
-        Square(20, 0, "IMF", 0,0,positions1[20]),
-        Square(21, 220, "red", 1, 0,positions1[21]),
-        Square(22, 0, "god's plan", 0,0,positions1[22]),
-        Square(23, 220, "red", 1, 0,positions1[23]),
-        Square(24, 240, "red", 1, 0,positions1[24]),
-        Square(25, 200, "airport", 1,0,positions1[25]),
-        Square(26, 260, "yellow", 1, 0,positions1[26]),
-        Square(27, 260, "yellow", 1, 0,positions1[27]),
-        Square(28, 150, "util", 1,0,positions1[28]),
-        Square(29, 280, "yellow", 1, 0,positions1[29]),
-        Square(30, 0, "jail", 0,0,positions1[30]),
-        Square(31, 300, "green", 1, 0,positions1[31]),
-        Square(32, 300, "green", 1, 0,positions1[32]),
-        Square(33, 0, "shipment", 0,0,positions1[33]),
-        Square(34, 320, "green", 1, 0,positions1[34]),
-        Square(35, 200, "airport", 1, 0,positions1[35]),
-        Square(36, 0, "god's plan", 0,0,positions1[36]),
-        Square(37, 350, "blue", 1, 0,positions1[37]),
-        Square(38, 100, "fee", 0,0,positions1[38]),
-        Square(39, 400, "blue", 1, 0,positions1[39]),
+        Square(0, 0, 0, 0, 0, 0, 0, 0, "GO!", 0, 0, positions1[0]), //go
+        Square(1, 60, 2, 10, 30, 90, 160, 250, "brown", 1, 0,positions1[1]), //New Zealand
+        Square(2, 0, 0, 0, 0, 0, 0, 0, "shipment", 0,0,positions1[2]),
+        Square(3, 60, 4, 20, 60, 180, 320, 450, "brown", 1, 0,positions1[3]), //Australia
+        Square(4, 200, 0, 0, 0, 0, 0, 0,"fee", 0,0,positions1[4]),
+        Square(5, 200, 50, 100, 150, 200, 0, 0, "airport", 1, 0,positions1[5]),
+        Square(6, 100, 6, 30, 90, 270, 400, 550, "cyan", 1, 0,positions1[6]),
+        Square(7, 0, 0, 0, 0, 0, 0, 0,"god's plan", 0,0,positions1[7]),
+        Square(8, 100, 6, 30, 90, 270, 400, 550, "cyan", 1, 0,positions1[8]),
+        Square(9, 120, 8, 40, 100, 300, 450, 600, "cyan", 1, 0,positions1[9]),
+        Square(10,0,0, 0, 0, 0, 0, 0,"free", 0,0,positions1[10]),
+        Square(11, 140, 10, 50, 150, 450, 625, 750, "pink", 1, 0,positions1[11]),
+        Square(12, 150, 0, 0, 0, 0, 0, 0,"util", 1,0,positions1[12]),
+        Square(13, 140, 10, 50, 150, 450, 625, 750, "pink", 1, 0,positions1[13]),
+        Square(14, 160, 12, 60, 180, 500, 700, 900, "pink", 1, 0,positions1[14]),
+        Square(15, 200, 50, 100, 150, 200, 0, 0, "airport", 1, 0,positions1[15]),
+        Square(16, 180, 14, 70, 200, 550, 750, 950, "orange", 1, 0,positions1[16]),
+        Square(17, 0, 0, 0, 0, 0, 0, 0,"shipment", 0,0,positions1[17]),
+        Square(18, 180, 14, 70, 200, 550, 750, 950, "orange", 1, 0,positions1[18]),
+        Square(19, 200, 16, 80, 220, 600, 800, 1000, "orange", 1, 0,positions1[19]),
+        Square(20, 0, 0, 0, 0, 0, 0, 0,"IMF", 0,0,positions1[20]),
+        Square(21, 220, 18, 90, 250, 700, 875, 1050, "red", 1, 0,positions1[21]),
+        Square(22, 0, 0, 0, 0, 0, 0, 0,"god's plan", 0,0,positions1[22]),
+        Square(23, 220, 18, 90, 250, 700, 875, 1050, "red", 1, 0,positions1[23]),
+        Square(24, 240, 20, 100, 300, 750, 925, 1100, "red", 1, 0,positions1[24]),
+        Square(25, 200, 50, 100, 150, 200, 0 ,0, "airport", 1,0,positions1[25]),
+        Square(26, 260, 22, 110, 330, 800, 975, 1150, "yellow", 1, 0,positions1[26]),
+        Square(27, 260, 22, 110, 330, 800, 975, 1150, "yellow", 1, 0,positions1[27]),
+        Square(28, 150, 0, 0, 0, 0, 0, 0,"util", 1,0,positions1[28]),
+        Square(29, 280, 24, 120, 360, 850, 1025, 1200, "yellow", 1, 0,positions1[29]),
+        Square(30, 0, 0, 0, 0, 0, 0, 0,"jail", 0,0,positions1[30]),
+        Square(31, 300, 26, 130, 390, 900, 1100, 1275, "green", 1, 0,positions1[31]),
+        Square(32, 300, 26, 130, 390, 900, 1100, 1275, "green", 1, 0,positions1[32]),
+        Square(33, 0, 0, 0, 0, 0, 0, 0,"shipment", 0,0,positions1[33]),
+        Square(34, 320, 28, 150, 450, 1000, 1200, 1400, "green", 1, 0,positions1[34]),
+        Square(35, 200, 50, 100, 150, 200, 0, 0, "airport", 1, 0,positions1[35]),
+        Square(36, 0, 0, 0, 0, 0, 0, 0,"god's plan", 0,0,positions1[36]),
+        Square(37, 350, 35, 175, 500, 1100, 1300, 1500, "blue", 1, 0,positions1[37]),
+        Square(38, 100,0, 0, 0, 0, 0, 0, "fee", 0,0,positions1[38]),
+        Square(39, 400, 50, 200, 600, 1400, 1700, 2000, "blue", 1, 0,positions1[39]),
     };
 
     std::random_device rd; //random number generator
@@ -230,7 +230,7 @@ int main()
                 }
             }
         }
-        std::cout << squares[P1.currentPos].getPlayerNo() << std::endl;
+        //std::cout << squares[P1.currentPos].getPlayerNo() << std::endl;
         sf::Time elapsed1 = clock.getElapsedTime();
         if (dice.roll_indices < dice.roll_result) {
             if (currentTurn == PlayerTurn::player1_turn) {
@@ -250,6 +250,7 @@ int main()
                             currentPhase = GamePhase::is_buying_phase;
                         }
                         else {
+                            //P1.update_money(0, squares[P1.currentPos].getRent0());
                             currentPhase = GamePhase::WaitForDice;
                             currentTurn = PlayerTurn::player2_turn;
                         }
@@ -272,6 +273,7 @@ int main()
                         if (squares[P2.currentPos].getBuyable()) {
                             currentPhase = GamePhase::is_buying_phase;
                         } else {
+                            //P2.update_money(0, squares[P2.currentPos].getRent0());
                             currentPhase = GamePhase::WaitForDice;
                             currentTurn = PlayerTurn::player1_turn;
                         }
