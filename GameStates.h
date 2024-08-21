@@ -10,6 +10,8 @@ enum class GamePhase {
     WaitForDice,
     RollingDice,
     is_buying_phase,
+    auctioning,
+    mortgaging,
 };
 std::string to_string(GamePhase phase);
 

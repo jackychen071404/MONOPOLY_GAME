@@ -12,3 +12,7 @@ Text::Text(const sf::Font& font, const std::string &words, const sf::Color& colo
 sf::FloatRect Text::getBounds() const {
     return content.getGlobalBounds();
 }
+
+void Text::setText(std::string &words) {
+    content.setString(words);
+}

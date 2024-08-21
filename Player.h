@@ -10,7 +10,7 @@ class Player {
         sf::CircleShape shape;
         sf::Vector2f* position_coordinates;
         int currentPos;
-        int money;
+        unsigned int money;
         unsigned int getPlayerNo() const; 
         sf::Text money_text;
 
