@@ -186,23 +186,23 @@ int main()
     GamePhase currentPhase = GamePhase::WaitForDice;
     PlayerTurn currentTurn = PlayerTurn::player1_turn;
 
+    Player* currentPlayer;
+    Player* otherPlayer;
+
     // Main loop
     while (window.isOpen())
     {
+        if (currentTurn == PlayerTurn::player1_turn) {
+            currentPlayer = &P1;
+            otherPlayer = &P2;
+        } else if (currentTurn == PlayerTurn::player2_turn) {
+            currentPlayer = &P2;
+            otherPlayer = &P1;
+        }
         sf::Event event;
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed) window.close();
-            Player* currentPlayer;
-            Player* otherPlayer;
-
-            if (currentTurn == PlayerTurn::player1_turn) {
-                currentPlayer = &P1;
-                otherPlayer = &P2;
-            } else if (currentTurn == PlayerTurn::player2_turn) {
-                currentPlayer = &P2;
-                otherPlayer = &P1;
-            }
 
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::WaitForDice)
             {
@@ -217,10 +217,8 @@ int main()
                     dice.roll_display = dice.roll_result;
                     same_roll = dice.die1==dice.die2;
 
-                    if (currentTurn == PlayerTurn::player1_turn)
-                        dice.dice_info.setString("Player " + std::to_string(1) + ": " + std::to_string(dice.die1) + " and " + std::to_string(dice.die2));
-                    else
-                        dice.dice_info.setString("Player " + std::to_string(2) + ": " + std::to_string(dice.die1) + " and " + std::to_string(dice.die2));
+                    if (currentTurn == PlayerTurn::player1_turn) dice.dice_info.setString("Player " + std::to_string(1) + ": " + std::to_string(dice.die1) + " and " + std::to_string(dice.die2));
+                    else dice.dice_info.setString("Player " + std::to_string(2) + ": " + std::to_string(dice.die1) + " and " + std::to_string(dice.die2));
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::is_buying_phase) {
@@ -238,59 +236,32 @@ int main()
         //std::cout << squares[P1.currentPos].getPlayerNo() << std::endl;
         sf::Time elapsed1 = clock.getElapsedTime();
         if (dice.roll_indices < dice.roll_result) {
-            if (currentTurn == PlayerTurn::player1_turn) {
                 if (elapsed1.asMilliseconds() >= 100) {
-                    if (P1.currentPos == 39) { //making sure to loop back
-                        P1.currentPos = 0;
-                        P1.update_money(1,200);
+                    if (currentPlayer->currentPos == 39) { //making sure to loop back
+                        currentPlayer->currentPos = 0;
+                        currentPlayer->update_money(1,200);
                     }
                     else {
-                        P1.currentPos++;
+                        currentPlayer->currentPos++;
                     }
                     dice.roll_indices++;
-                    P1.shape.setPosition(P1.position_coordinates[P1.currentPos]);
+                    currentPlayer->shape.setPosition(currentPlayer->position_coordinates[currentPlayer->currentPos]);
                     if (dice.roll_indices == dice.roll_result && !same_roll) { //this indicates the turn is over, when destination is reached
-                        if (squares[P1.currentPos].getBuyable()) {
+                        if (squares[currentPlayer->currentPos].getBuyable()) {
                             currentPhase = GamePhase::is_buying_phase;
                         }
                         else {
-                            if (squares[P1.currentPos].getPlayerNo() == 2) {
-                                P1.update_money(0, squares[P1.currentPos].getRent0());
-                                P2.update_money(1, squares[P1.currentPos].getRent0());
+                            if (squares[currentPlayer->currentPos].getPlayerNo() != currentPlayer->getPlayerNo()) {
+                                currentPlayer->update_money(0, squares[currentPlayer->currentPos].getRent0());
+                                otherPlayer->update_money(1, squares[currentPlayer->currentPos].getRent0());
                             }
                             currentPhase = GamePhase::WaitForDice;
-                            currentTurn = PlayerTurn::player2_turn;
+                            if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
+                            else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                         }
                     }
                     clock.restart();
                 }
-            }
-            else if (currentTurn == PlayerTurn::player2_turn) {
-                if (elapsed1.asMilliseconds() >= 100) {
-                    if (P2.currentPos == 39) {
-                        P2.currentPos = 0;
-                        P2.update_money(1,200);
-                    }
-                    else {
-                        P2.currentPos++;
-                    }
-                    dice.roll_indices++;
-                    P2.shape.setPosition(positions2[P2.currentPos]);
-                    if (dice.roll_indices == dice.roll_result && !same_roll) {
-                        if (squares[P2.currentPos].getBuyable()) {
-                            currentPhase = GamePhase::is_buying_phase;
-                        } else {
-                            if (squares[P2.currentPos].getPlayerNo() == 1) {
-                                P2.update_money(0, squares[P2.currentPos].getRent0());
-                                P1.update_money(1, squares[P2.currentPos].getRent0());
-                            }
-                            currentPhase = GamePhase::WaitForDice;
-                            currentTurn = PlayerTurn::player1_turn;
-                        }
-                    }
-                    clock.restart();
-                }
-            }
         } else {
             if (same_roll) currentPhase = GamePhase::WaitForDice;
             dice.roll_indices = 0;
