@@ -284,7 +284,7 @@ int main()
                 }
             }
         }
-        //std::cout << currentPlayer->currentPos << std::endl;
+        std::cout << squares[currentPlayer->currentPos].getPlayerNo() << std::endl;
         sf::Time elapsed1 = clock.getElapsedTime();
         if (dice.roll_indices < dice.roll_result) {
             if (elapsed1.asMilliseconds() >= 100) {
