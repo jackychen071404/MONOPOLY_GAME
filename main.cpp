@@ -250,7 +250,10 @@ int main()
                             currentPhase = GamePhase::is_buying_phase;
                         }
                         else {
-                            //P1.update_money(0, squares[P1.currentPos].getRent0());
+                            if (squares[P1.currentPos].getPlayerNo() == 2) {
+                                P1.update_money(0, squares[P1.currentPos].getRent0());
+                                P2.update_money(1, squares[P1.currentPos].getRent0());
+                            }
                             currentPhase = GamePhase::WaitForDice;
                             currentTurn = PlayerTurn::player2_turn;
                         }
@@ -273,7 +276,10 @@ int main()
                         if (squares[P2.currentPos].getBuyable()) {
                             currentPhase = GamePhase::is_buying_phase;
                         } else {
-                            //P2.update_money(0, squares[P2.currentPos].getRent0());
+                            if (squares[P2.currentPos].getPlayerNo() == 1) {
+                                P2.update_money(0, squares[P2.currentPos].getRent0());
+                                P1.update_money(1, squares[P2.currentPos].getRent0());
+                            }
                             currentPhase = GamePhase::WaitForDice;
                             currentTurn = PlayerTurn::player1_turn;
                         }
