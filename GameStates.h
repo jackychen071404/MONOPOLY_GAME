@@ -16,5 +16,6 @@ enum class GamePhase {
     remortgaging,
 };
 std::string to_string(GamePhase phase);
+std::string to_string(PlayerTurn turn);
 
 #endif // GAMESTATES_H

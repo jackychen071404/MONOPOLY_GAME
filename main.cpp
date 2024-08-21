@@ -183,7 +183,7 @@ int main()
     Text auction_phase(font, "AUCTION?", sf::Color::Black, 48, sf::Vector2f(600.f,350.f));
     Text remortgage(font, "REMORTGAGE?", sf::Color::Black, 48, sf::Vector2f(500.f,600.f));
     Text mortgage(font, "MORTGAGE?", sf::Color::Black, 48, sf::Vector2f(500.f,700.f));
-    Text end_mortgage(font, "END MORTGAGE", sf::Color::Black, 48, sf::Vector2f(700.f,700.f));
+    Text end_mortgage(font, "END", sf::Color::Black, 48, sf::Vector2f(700.f,700.f));
     Text pass(font, "PASS", sf::Color::Black, 48, sf::Vector2f(700.f,800.f));
     Text jail_notif(font, "GO TO JAIL.", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
     Text p1_notif(font, "+$", sf::Color::Black, 48, sf::Vector2f(600,750));
@@ -251,9 +251,13 @@ int main()
                     for (int i = 0; i < 40; i++) {
                         if (squares[i].getPlayerNo() == currentPlayer->getPlayerNo()) {
                             if (squares[i].bought_circle.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                                if (currentTurn == PlayerTurn::player1_turn) squares[i].setPlayerNo(3);
-                                else squares[i].setPlayerNo(4);
-                                squares[i].bought_circle.setOutlineColor(sf::Color::Green); //mortgaged
+                                if (currentTurn == PlayerTurn::player1_turn) {
+                                    squares[i].setPlayerNo(3);
+                                    squares[i].bought_circle.setOutlineColor(sf::Color::Green);
+                                } else {
+                                    squares[i].setPlayerNo(4); 
+                                    squares[i].bought_circle.setOutlineColor(sf::Color::Yellow); //mortgaged
+                                }
                                 currentPlayer->update_money(1, squares[i].getPrice() * .5);
                             }
                         }
@@ -295,6 +299,8 @@ int main()
                 }   else if (remortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     currentPhase = GamePhase::remortgaging;
                 } else if (pass.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
+                    else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     currentPhase = GamePhase::WaitForDice;
                 }
             }
@@ -319,7 +325,7 @@ int main()
                         returnToBuy = true;
                     }
                     else {
-                        if (squares[currentPlayer->currentPos].getPlayerNo() != currentPlayer->getPlayerNo() && squares[currentPlayer->currentPos].bought_circle.getOutlineColor() != sf::Color::Green) {
+                        if (squares[currentPlayer->currentPos].getPlayerNo() != currentPlayer->getPlayerNo() && squares[currentPlayer->currentPos].bought_circle.getOutlineColor() != sf::Color::Yellow && squares[currentPlayer->currentPos].bought_circle.getOutlineColor() != sf::Color::Green) {
                             currentPlayer->update_money(0, squares[currentPlayer->currentPos].getRent0());
                             otherPlayer->update_money(1, squares[currentPlayer->currentPos].getRent0());
                         } 
@@ -327,8 +333,6 @@ int main()
                         else if (currentPlayer->currentPos == 38) currentPlayer->update_money(0, 100); //two fees
                         currentPhase = GamePhase::isNot_buying_phase;
                         returnToBuy = false;
-                        if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
-                        else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     }
                 }
                 clock.restart();
@@ -338,7 +342,7 @@ int main()
             dice.roll_indices = 0;
             dice.roll_result = 0;
         }
-        //std::cout << to_string(currentPhase) << std::endl;
+        std::cout << to_string(currentTurn) << std::endl;
 
         window.clear();
         window.draw(sprite); // Draw the scaled sprite of the game board
