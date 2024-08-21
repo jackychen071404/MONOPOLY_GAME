@@ -10,6 +10,7 @@ enum class GamePhase {
     WaitForDice,
     RollingDice,
     is_buying_phase,
+    isNot_buying_phase,
     auctioning,
     mortgaging,
     remortgaging,
