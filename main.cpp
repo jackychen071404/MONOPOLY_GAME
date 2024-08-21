@@ -193,6 +193,17 @@ int main()
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed) window.close();
+            Player* currentPlayer;
+            Player* otherPlayer;
+
+            if (currentTurn == PlayerTurn::player1_turn) {
+                currentPlayer = &P1;
+                otherPlayer = &P2;
+            } else if (currentTurn == PlayerTurn::player2_turn) {
+                currentPlayer = &P2;
+                otherPlayer = &P1;
+            }
+
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::WaitForDice)
             {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
@@ -215,17 +226,11 @@ int main()
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::is_buying_phase) {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 if (buying_phase.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                    if (currentTurn == PlayerTurn::player1_turn) {
-                        P1.update_money(0,squares[P1.currentPos].getPrice());
-                        squares[P1.currentPos].setPlayerNo(1);
-                        squares[P1.currentPos].setBuyable(0);
-                        currentTurn = PlayerTurn::player2_turn;
-                    } else if (currentTurn == PlayerTurn::player2_turn) {
-                        P2.update_money(0,squares[P2.currentPos].getPrice());
-                        squares[P2.currentPos].setPlayerNo(2);
-                        squares[P2.currentPos].setBuyable(0);
-                        currentTurn = PlayerTurn::player1_turn;
-                    }
+                    currentPlayer->update_money(0,squares[currentPlayer->currentPos].getPrice());
+                    squares[currentPlayer->currentPos].setPlayerNo(currentPlayer->getPlayerNo());
+                    squares[currentPlayer->currentPos].setBuyable(0);
+                    if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
+                    else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     currentPhase = GamePhase::WaitForDice;
                 }
             }
@@ -234,7 +239,6 @@ int main()
         sf::Time elapsed1 = clock.getElapsedTime();
         if (dice.roll_indices < dice.roll_result) {
             if (currentTurn == PlayerTurn::player1_turn) {
-    
                 if (elapsed1.asMilliseconds() >= 100) {
                     if (P1.currentPos == 39) { //making sure to loop back
                         P1.currentPos = 0;

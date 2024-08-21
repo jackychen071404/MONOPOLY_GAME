@@ -30,3 +30,7 @@ void Player::update_money(bool add_or_cut, int amt) {
     }
     money_text.setString("Player " + std::to_string(player_no) + ": $" + std::to_string(money));
 }
+
+unsigned int Player::getPlayerNo() const {
+    return player_no;
+}

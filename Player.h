@@ -11,6 +11,7 @@ class Player {
         sf::Vector2f* position_coordinates;
         int currentPos;
         int money;
+        unsigned int getPlayerNo() const; 
         sf::Text money_text;
 
         void update_money(bool add_or_cut, int amt);
