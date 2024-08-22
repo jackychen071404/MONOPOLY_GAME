@@ -8,7 +8,7 @@ class Text {
         Text(const sf::Font& font, const std::string &words, const sf::Color& color, const unsigned int size, const sf::Vector2f& position);
         sf::Text content;
         sf::FloatRect getBounds() const;
-        void setText(std::string &words);
+        void setText(const std::string &words);
 };
 
 #endif

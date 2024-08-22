@@ -13,6 +13,6 @@ sf::FloatRect Text::getBounds() const {
     return content.getGlobalBounds();
 }
 
-void Text::setText(std::string &words) {
+void Text::setText(const std::string &words) {
     content.setString(words);
 }

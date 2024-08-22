@@ -6,6 +6,11 @@ enum class PlayerTurn {
     player2_turn,
 };
 
+enum class AuctionTurn {
+    player1_turn,
+    player2_turn,
+};
+
 enum class GamePhase {
     WaitForDice,
     RollingDice,

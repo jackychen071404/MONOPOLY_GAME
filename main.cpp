@@ -1,11 +1,14 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 #include <Windows.h>
+#include <string>
 #include <iostream>
 #include <random>
 #include <cstdlib>
 #include "Player.h"
 #include "Dice.h"
 #include "Text.h"
+#include "Textbox.h"
 #include "Square.h"
 #include "GameStates.h"
 
@@ -176,6 +179,8 @@ int main()
     //booleans for game states. Is the dice rolling? Is it buying phase? Etc.
     bool returnToBuy = false;
     bool same_roll = false;
+    int biddingNo = 0;
+    int previousBiddingNo = 0;
 
     //various game messages
     Text same_roll_notif(font, "Same numbers! Roll again.", sf::Color::Black, 48, sf::Vector2f(250.f,250.f));
@@ -188,10 +193,16 @@ int main()
     Text jail_notif(font, "GO TO JAIL.", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
     Text p1_notif(font, "+$", sf::Color::Black, 48, sf::Vector2f(600,750));
     Text p2_notif(font, "+$", sf::Color::Black, 48, sf::Vector2f(600,800));
+    TextBox textBox(350, 600, 300, 50, font);
+    Text auction_notes(font, "Enter bid.", sf::Color::Black, 48, sf::Vector2f(350.f, 500.f));
+    Text how_much(font, "HOW MUCH?", sf::Color::Black, 48, sf::Vector2f(350.f, 300.f));
+    Text bid(font, "BID!", sf::Color::Black, 48, sf::Vector2f(150.f, 700.f));
+    Text GIVE(font, "GIVE UP!", sf::Color::Black, 48, sf::Vector2f(700.f, 700.f));
+    Text biddingNoText(font, "Previous bid: 0", sf::Color::Black, 48, sf::Vector2f(120.f, 120.f));
 
     GamePhase currentPhase = GamePhase::WaitForDice;
     PlayerTurn currentTurn = PlayerTurn::player1_turn;
-
+    AuctionTurn auctionTurn = AuctionTurn::player1_turn;
     Player* currentPlayer;
     Player* otherPlayer;
 
@@ -209,6 +220,9 @@ int main()
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed) window.close();
+            if (currentPhase == GamePhase::auctioning) {
+                if (textBox.getFocus()) textBox.handleEvent(event);
+            }
 
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::WaitForDice)
             {
@@ -239,6 +253,8 @@ int main()
                     currentPhase = GamePhase::mortgaging;
                 }   else if (remortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     currentPhase = GamePhase::remortgaging;
+                }   else if (auction_phase.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    currentPhase = GamePhase::auctioning;
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::mortgaging) {
@@ -304,6 +320,34 @@ int main()
                     currentPhase = GamePhase::WaitForDice;
                 }
             }
+            if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::auctioning) {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if (textBox.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    textBox.setFocus(true);
+                }   else {
+                    textBox.setFocus(false);
+                }
+                if (currentTurn == PlayerTurn::player1_turn)  auctionTurn = AuctionTurn::player1_turn;
+                else if (currentTurn == PlayerTurn::player2_turn) auctionTurn = AuctionTurn::player2_turn;
+
+                if (GIVE.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
+                    else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
+                    currentPhase = GamePhase::WaitForDice;
+                } else if (bid.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    biddingNo = std::stoi(textBox.getText());
+                    if (biddingNo < 1) auction_notes.setText("Enter value higher than 1!");
+                    else if (biddingNo < previousBiddingNo) auction_notes.setText("Set value higher than previous bid!");
+                    else {
+                        std::cout << "fuck " << std::endl;
+                        biddingNo = previousBiddingNo;
+                        std::string previousBiddingStr = "Previous bid: " + std::to_string(previousBiddingNo);
+                        biddingNoText.setText(previousBiddingStr);
+                        if (auctionTurn == AuctionTurn::player1_turn)  auctionTurn = AuctionTurn::player2_turn;
+                        else if (auctionTurn == AuctionTurn::player2_turn) auctionTurn = AuctionTurn::player1_turn;
+                    }
+                }
+            }
         }
 
         //std::cout << squares[currentPlayer->currentPos].getPlayerNo() << std::endl;
@@ -342,7 +386,7 @@ int main()
             dice.roll_indices = 0;
             dice.roll_result = 0;
         }
-        std::cout << to_string(currentTurn) << std::endl;
+        //std::cout << to_string(currentPhase) << std::endl;
 
         window.clear();
         window.draw(sprite); // Draw the scaled sprite of the game board
@@ -358,6 +402,13 @@ int main()
             window.draw(mortgage.content);
             window.draw(remortgage.content);
             window.draw(pass.content);
+        } else if (currentPhase == GamePhase::auctioning) {
+            textBox.draw(window);
+            window.draw(how_much.content);
+            window.draw(auction_notes.content);
+            window.draw(bid.content);
+            window.draw(GIVE.content);
+            window.draw(biddingNoText.content);
         }
         for (int i = 0; i < 40; i++) {
             if (squares[i].getPlayerNo() == 1) squares[i].bought_circle.setOutlineColor(sf::Color::Red);
