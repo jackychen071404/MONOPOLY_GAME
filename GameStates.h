@@ -22,5 +22,6 @@ enum class GamePhase {
 };
 std::string to_string(GamePhase phase);
 std::string to_string(PlayerTurn turn);
+std::string to_string(AuctionTurn turn);
 
 #endif // GAMESTATES_H

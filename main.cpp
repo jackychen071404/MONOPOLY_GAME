@@ -199,6 +199,7 @@ int main()
     Text bid(font, "BID!", sf::Color::Black, 48, sf::Vector2f(150.f, 700.f));
     Text GIVE(font, "GIVE UP!", sf::Color::Black, 48, sf::Vector2f(700.f, 700.f));
     Text biddingNoText(font, "Previous bid: 0", sf::Color::Black, 48, sf::Vector2f(120.f, 120.f));
+    Text auc_turn(font, "Auction Turn: ", sf::Color::Black, 48, sf::Vector2f(650.f, 120.f));
 
     GamePhase currentPhase = GamePhase::WaitForDice;
     PlayerTurn currentTurn = PlayerTurn::player1_turn;
@@ -330,21 +331,38 @@ int main()
                 if (currentTurn == PlayerTurn::player1_turn)  auctionTurn = AuctionTurn::player1_turn;
                 else if (currentTurn == PlayerTurn::player2_turn) auctionTurn = AuctionTurn::player2_turn;
 
-                if (GIVE.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                if (GIVE.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && !textBox.getText().empty()) {
                     if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
+                    if (auctionTurn == AuctionTurn::player1_turn)  {
+                        P2.update_money(0, biddingNo);
+                        squares[currentPlayer->currentPos].setPlayerNo(P2.getPlayerNo());
+                        squares[currentPlayer->currentPos].setBuyable(0);
+                    } else if (auctionTurn == AuctionTurn::player2_turn) {
+                        P1.update_money(0, biddingNo);
+                        squares[currentPlayer->currentPos].setPlayerNo(P1.getPlayerNo());
+                        squares[currentPlayer->currentPos].setBuyable(0);
+                    }
+                    biddingNo = 0;
+                    previousBiddingNo = 0;
                     currentPhase = GamePhase::WaitForDice;
+                    //reset auction values
                 } else if (bid.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     biddingNo = std::stoi(textBox.getText());
                     if (biddingNo < 1) auction_notes.setText("Enter value higher than 1!");
                     else if (biddingNo < previousBiddingNo) auction_notes.setText("Set value higher than previous bid!");
                     else {
-                        std::cout << "fuck " << std::endl;
-                        biddingNo = previousBiddingNo;
+                        previousBiddingNo = biddingNo;
                         std::string previousBiddingStr = "Previous bid: " + std::to_string(previousBiddingNo);
                         biddingNoText.setText(previousBiddingStr);
-                        if (auctionTurn == AuctionTurn::player1_turn)  auctionTurn = AuctionTurn::player2_turn;
-                        else if (auctionTurn == AuctionTurn::player2_turn) auctionTurn = AuctionTurn::player1_turn;
+                        if (auctionTurn == AuctionTurn::player1_turn)  {
+                            auctionTurn = AuctionTurn::player2_turn;
+                            auc_turn.setText("Turn: Player 2");
+                        }
+                        else if (auctionTurn == AuctionTurn::player2_turn) {
+                            auctionTurn = AuctionTurn::player1_turn;
+                            auc_turn.setText("Turn: Player 1");
+                        }
                     }
                 }
             }
@@ -386,7 +404,7 @@ int main()
             dice.roll_indices = 0;
             dice.roll_result = 0;
         }
-        //std::cout << to_string(currentPhase) << std::endl;
+        std::cout << to_string(auctionTurn) << std::endl;
 
         window.clear();
         window.draw(sprite); // Draw the scaled sprite of the game board
@@ -407,8 +425,9 @@ int main()
             window.draw(how_much.content);
             window.draw(auction_notes.content);
             window.draw(bid.content);
-            window.draw(GIVE.content);
+            if (!textBox.getText().empty()) window.draw(GIVE.content);
             window.draw(biddingNoText.content);
+            window.draw(auc_turn.content);
         }
         for (int i = 0; i < 40; i++) {
             if (squares[i].getPlayerNo() == 1) squares[i].bought_circle.setOutlineColor(sf::Color::Red);

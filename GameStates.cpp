@@ -20,3 +20,11 @@ std::string to_string(PlayerTurn turn) {
         default: return "Unknown GamePhase";
     }
 }
+
+std::string to_string(AuctionTurn turn) {
+    switch (turn) {
+        case AuctionTurn::player1_turn: return "auc_player1";
+        case AuctionTurn::player2_turn: return "auc_player2";
+        default: return "Unknown GamePhase";
+    }
+}
