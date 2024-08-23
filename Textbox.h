@@ -12,6 +12,7 @@ public:
     std::string getText() const;
     bool getFocus();
     void setFocus(bool focus);
+    void clear();
     sf::FloatRect getBounds() const;
 
 private:

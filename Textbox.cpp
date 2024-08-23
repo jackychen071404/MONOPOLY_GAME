@@ -50,6 +50,11 @@ void TextBox::setFocus(bool focus) {
     isFocused = focus;
 }
 
+void TextBox::clear() {
+    inputText.clear();      
+    text.setString("");        
+}
+
 sf::FloatRect TextBox::getBounds() const {
     return box.getGlobalBounds();
 }

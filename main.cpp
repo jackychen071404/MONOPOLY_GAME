@@ -204,6 +204,8 @@ int main()
     GamePhase currentPhase = GamePhase::WaitForDice;
     PlayerTurn currentTurn = PlayerTurn::player1_turn;
     AuctionTurn auctionTurn = AuctionTurn::player1_turn;
+    bool firstAuction = true;
+    bool firstBid = false;
     Player* currentPlayer;
     Player* otherPlayer;
 
@@ -322,6 +324,15 @@ int main()
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::auctioning) {
+                if (firstAuction) {
+                    biddingNo = 0;
+                    previousBiddingNo = 0;
+                    std::string previousBiddingStr = "Previous bid: " + std::to_string(previousBiddingNo);
+                    biddingNoText.setText(previousBiddingStr);
+                    textBox.clear();
+                    firstAuction = false;
+                    firstBid = false;
+                }
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 if (textBox.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     textBox.setFocus(true);
@@ -335,22 +346,24 @@ int main()
                     if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     if (auctionTurn == AuctionTurn::player1_turn)  {
-                        P2.update_money(0, biddingNo);
-                        squares[currentPlayer->currentPos].setPlayerNo(P2.getPlayerNo());
-                        squares[currentPlayer->currentPos].setBuyable(0);
-                    } else if (auctionTurn == AuctionTurn::player2_turn) {
                         P1.update_money(0, biddingNo);
                         squares[currentPlayer->currentPos].setPlayerNo(P1.getPlayerNo());
+                        squares[currentPlayer->currentPos].setBuyable(0);
+                    } else if (auctionTurn == AuctionTurn::player2_turn) {
+                        P2.update_money(0, biddingNo);
+                        squares[currentPlayer->currentPos].setPlayerNo(P2.getPlayerNo());
                         squares[currentPlayer->currentPos].setBuyable(0);
                     }
                     biddingNo = 0;
                     previousBiddingNo = 0;
                     currentPhase = GamePhase::WaitForDice;
+                    firstAuction = true;
                     //reset auction values
                 } else if (bid.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    firstBid = true;
                     biddingNo = std::stoi(textBox.getText());
                     if (biddingNo < 1) auction_notes.setText("Enter value higher than 1!");
-                    else if (biddingNo < previousBiddingNo) auction_notes.setText("Set value higher than previous bid!");
+                    else if (biddingNo <= previousBiddingNo) auction_notes.setText("Set value higher than previous bid!");
                     else {
                         previousBiddingNo = biddingNo;
                         std::string previousBiddingStr = "Previous bid: " + std::to_string(previousBiddingNo);
@@ -425,7 +438,7 @@ int main()
             window.draw(how_much.content);
             window.draw(auction_notes.content);
             window.draw(bid.content);
-            if (!textBox.getText().empty()) window.draw(GIVE.content);
+            if (!textBox.getText().empty() && firstBid) window.draw(GIVE.content);
             window.draw(biddingNoText.content);
             window.draw(auc_turn.content);
         }
