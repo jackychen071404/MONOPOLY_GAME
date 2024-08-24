@@ -237,8 +237,8 @@ int main()
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 if (dice.shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
                 {
-                    dice.die1 = 6;//dis(gen);
-                    dice.die2 = 4;//dis(gen);
+                    dice.die1 = 3;//dis(gen);
+                    dice.die2 = 3;//dis(gen);
                     dice.roll_result = dice.die1+dice.die2;
                     dice.roll_display = dice.roll_result;
                     if (dice.die1 != dice.die2) sameRollCount = 0;
@@ -390,6 +390,19 @@ int main()
                     }
                 }
             }
+            if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::inJail) {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if (pay50.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    currentPlayer->update_money(0, 50);
+                    currentPlayer->inJail = false;
+                    if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
+                    else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
+                    if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
+                    else currentPhase = GamePhase::inJail;
+                } else if (pay50.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    
+                }
+            }
         }
         //std::cout << squares[currentPlayer->currentPos].getPlayerNo() << std::endl;
         sf::Time elapsed1 = clock.getElapsedTime();
@@ -426,7 +439,7 @@ int main()
                 }
                 clock.restart();
             }
-        } else if (currentPhase != GamePhase::SendingtoJail) {
+        } else if (currentPhase != GamePhase::SendingtoJail) { //same roll, roll again
             if (same_roll) {
                 currentPhase = GamePhase::WaitForDice;
             }
@@ -434,15 +447,14 @@ int main()
             dice.roll_result = 0;
         }
 
-        if (sameRollCount == 3) {
+        if (sameRollCount == 3) { //3 same rolls = jail
             currentPhase = GamePhase::SendingtoJail;
             currentPlayer->inJail = true;
             sameRollCount = 0;
             jail_notif.setText("3 SAME ROLLS! GO TO JAIL");
         }
 
-        //check 3 same rolls for jail
-        std::cout << to_string(currentPhase) << " " << currentPlayer->inJail << std::endl;
+        //std::cout << to_string(currentPhase) << " " << currentPlayer->inJail << same_roll << std::endl;
         if (currentPhase == GamePhase::SendingtoJail) {
             int jailer = currentPlayer->currentPos;
             if (elapsed1.asMilliseconds() >= 200) {
@@ -463,6 +475,7 @@ int main()
                     if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     jailer = otherPlayer->currentPos;
+                    same_roll = false;
                 }
                 clock.restart(); 
             }
