@@ -192,7 +192,10 @@ int main()
     Text mortgage(font, "MORTGAGE?", sf::Color::Black, 48, sf::Vector2f(500.f,700.f));
     Text end_mortgage(font, "END", sf::Color::Black, 48, sf::Vector2f(700.f,700.f));
     Text pass(font, "PASS", sf::Color::Black, 48, sf::Vector2f(700.f,800.f));
-    Text jail_notif(font, "GO TO JAIL.", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
+    Text jail_notif(font, "GO TO JAIL.", sf::Color::Black, 48, sf::Vector2f(500.f,100.f));
+    Text who_jail(font, "", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
+    Text pay50(font, "PAY 50$?", sf::Color::Black,48,sf::Vector2f(300,300));
+    Text roll_freedom(font, "ROLL?", sf::Color::Black,48,sf::Vector2f(600,300));
     Text p1_notif(font, "+$", sf::Color::Black, 48, sf::Vector2f(600,750));
     Text p2_notif(font, "+$", sf::Color::Black, 48, sf::Vector2f(600,800));
     TextBox textBox(350, 600, 300, 50, font);
@@ -234,8 +237,8 @@ int main()
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 if (dice.shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
                 {
-                    dice.die1 = dis(gen);
-                    dice.die2 = dis(gen);
+                    dice.die1 = 6;//dis(gen);
+                    dice.die2 = 4;//dis(gen);
                     dice.roll_result = dice.die1+dice.die2;
                     dice.roll_display = dice.roll_result;
                     if (dice.die1 != dice.die2) sameRollCount = 0;
@@ -255,7 +258,8 @@ int main()
                     squares[currentPlayer->currentPos].setBuyable(0);
                     if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
-                    currentPhase = GamePhase::WaitForDice;
+                    if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
+                    else currentPhase = GamePhase::inJail;
                 }   else if (mortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     currentPhase = GamePhase::mortgaging;
                 }   else if (remortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
@@ -324,7 +328,8 @@ int main()
                 } else if (pass.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
-                    currentPhase = GamePhase::WaitForDice;
+                    if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
+                    else currentPhase = GamePhase::inJail;
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::auctioning) {
@@ -360,7 +365,8 @@ int main()
                     }
                     biddingNo = 0;
                     previousBiddingNo = 0;
-                    currentPhase = GamePhase::WaitForDice;
+                    if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
+                    else currentPhase = GamePhase::inJail;
                     firstAuction = true;
                     //reset auction values
                 } else if (bid.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
@@ -385,7 +391,6 @@ int main()
                 }
             }
         }
-        std::cout<<sameRollCount<<std::endl;
         //std::cout << squares[currentPlayer->currentPos].getPlayerNo() << std::endl;
         sf::Time elapsed1 = clock.getElapsedTime();
         if (dice.roll_indices < dice.roll_result) {
@@ -431,12 +436,13 @@ int main()
 
         if (sameRollCount == 3) {
             currentPhase = GamePhase::SendingtoJail;
+            currentPlayer->inJail = true;
             sameRollCount = 0;
             jail_notif.setText("3 SAME ROLLS! GO TO JAIL");
         }
 
         //check 3 same rolls for jail
-        //std::cout << to_string(auctionTurn) << std::endl;
+        std::cout << to_string(currentPhase) << " " << currentPlayer->inJail << std::endl;
         if (currentPhase == GamePhase::SendingtoJail) {
             int jailer = currentPlayer->currentPos;
             if (elapsed1.asMilliseconds() >= 200) {
@@ -451,7 +457,8 @@ int main()
                 }
                 currentPlayer->shape.setPosition(currentPlayer->position_coordinates[currentPlayer->currentPos]);
                 if (jailer == 10) {
-                    currentPhase = GamePhase::WaitForDice;
+                    if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
+                    else currentPhase = GamePhase::inJail;
                     jail_notif.setText("GO TO JAIL");
                     if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
@@ -460,6 +467,7 @@ int main()
                 clock.restart(); 
             }
         }
+        
         window.clear();
         window.draw(sprite); // Draw the scaled sprite of the game board
         if (same_roll) window.draw(same_roll_notif.content);
@@ -482,14 +490,20 @@ int main()
             if (!textBox.getText().empty() && firstBid) window.draw(GIVE.content);
             window.draw(biddingNoText.content);
             window.draw(auc_turn.content);
+        } else if (currentPhase == GamePhase::SendingtoJail) {
+            window.draw(jail_notif.content);
+        } else if (currentPhase == GamePhase::inJail) {
+            if (currentTurn == PlayerTurn::player1_turn) who_jail.setText("Player 1 in jail");
+            else who_jail.setText("Player 2 in jail");
+            window.draw(who_jail.content);
+            window.draw(pay50.content);
+            window.draw(roll_freedom.content);
         }
+        
         for (int i = 0; i < 40; i++) {
             if (squares[i].getPlayerNo() == 1) squares[i].bought_circle.setOutlineColor(sf::Color::Red);
             if (squares[i].getPlayerNo() == 2) squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
             if (!squares[i].getBuyable()) window.draw(squares[i].bought_circle);
-        }
-        if (currentPhase == GamePhase::SendingtoJail) {
-            window.draw(jail_notif.content);
         }
         window.draw(P1.shape);
         window.draw(P2.shape);

@@ -6,9 +6,12 @@ std::string to_string(GamePhase phase) {
         case GamePhase::RollingDice: return "RollingDice";
         case GamePhase::WaitForDice: return "WaitForDice";
         case GamePhase::is_buying_phase: return "is_buying_phase";
+        case GamePhase::isNot_buying_phase: return "is_not_buying_phase";
         case GamePhase::mortgaging: return "mortgaging";
         case GamePhase::remortgaging: return "remortgaging";
         case GamePhase::auctioning: return "auctioning";
+        case GamePhase::SendingtoJail: return "SendingtoJail";
+        case GamePhase::inJail: return "inJail";
         default: return "Unknown GamePhase";
     }
 }
