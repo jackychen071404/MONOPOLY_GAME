@@ -14,6 +14,8 @@ enum class AuctionTurn {
 enum class GamePhase {
     WaitForDice,
     RollingDice,
+    SendingtoJail,
+    inJail,
     is_buying_phase,
     isNot_buying_phase,
     auctioning,

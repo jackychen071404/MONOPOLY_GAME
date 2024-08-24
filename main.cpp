@@ -234,8 +234,8 @@ int main()
                 if (dice.shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
                 {
                     currentPhase = GamePhase::RollingDice;
-                    dice.die1 = dis(gen);
-                    dice.die2 = dis(gen);
+                    dice.die1 = 6;//dis(gen);
+                    dice.die2 = 4;//dis(gen);
                     dice.roll_result = dice.die1+dice.die2;
                     dice.roll_display = dice.roll_result;
                     same_roll = dice.die1==dice.die2;
@@ -408,7 +408,12 @@ int main()
                         } 
                         if (currentPlayer->currentPos == 4) currentPlayer->update_money(0, 200);
                         else if (currentPlayer->currentPos == 38) currentPlayer->update_money(0, 100); //two fees
-                        currentPhase = GamePhase::isNot_buying_phase;
+                        else if (currentPlayer->currentPos == 30) {
+                            currentPlayer->inJail = true;
+                            currentPhase = GamePhase::SendingtoJail;
+                            //std::cout<<"oh no"<<std::endl;
+                        }
+                        if (currentPhase != GamePhase::SendingtoJail) currentPhase = GamePhase::isNot_buying_phase;
                         returnToBuy = false;
                     }
                 }
@@ -419,8 +424,22 @@ int main()
             dice.roll_indices = 0;
             dice.roll_result = 0;
         }
-        std::cout << to_string(auctionTurn) << std::endl;
-
+        //std::cout << to_string(auctionTurn) << std::endl;
+        if (currentPhase == GamePhase::SendingtoJail) {
+            static int jailer = 30;
+             if (elapsed1.asMilliseconds() >= 200) {
+                currentPlayer->currentPos--;
+                jailer--;
+                currentPlayer->shape.setPosition(currentPlayer->position_coordinates[currentPlayer->currentPos]);
+                if (jailer == 10) {
+                    currentPhase = GamePhase::WaitForDice;
+                    if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
+                    else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
+                    jailer = 30;
+                }
+                clock.restart(); 
+            }
+        }
         window.clear();
         window.draw(sprite); // Draw the scaled sprite of the game board
         if (same_roll) window.draw(same_roll_notif.content);
@@ -448,6 +467,9 @@ int main()
             if (squares[i].getPlayerNo() == 1) squares[i].bought_circle.setOutlineColor(sf::Color::Red);
             if (squares[i].getPlayerNo() == 2) squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
             if (!squares[i].getBuyable()) window.draw(squares[i].bought_circle);
+        }
+        if (currentPhase == GamePhase::SendingtoJail) {
+            window.draw(jail_notif.content);
         }
         window.draw(P1.shape);
         window.draw(P2.shape);
