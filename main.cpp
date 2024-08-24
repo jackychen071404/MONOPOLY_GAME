@@ -325,6 +325,8 @@ int main()
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::auctioning) {
                 if (firstAuction) {
+                    if (currentTurn == PlayerTurn::player1_turn)  auctionTurn = AuctionTurn::player1_turn;
+                    else if (currentTurn == PlayerTurn::player2_turn) auctionTurn = AuctionTurn::player2_turn;
                     biddingNo = 0;
                     previousBiddingNo = 0;
                     std::string previousBiddingStr = "Previous bid: " + std::to_string(previousBiddingNo);
@@ -339,19 +341,17 @@ int main()
                 }   else {
                     textBox.setFocus(false);
                 }
-                if (currentTurn == PlayerTurn::player1_turn)  auctionTurn = AuctionTurn::player1_turn;
-                else if (currentTurn == PlayerTurn::player2_turn) auctionTurn = AuctionTurn::player2_turn;
 
                 if (GIVE.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && !textBox.getText().empty()) {
                     if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     if (auctionTurn == AuctionTurn::player1_turn)  {
-                        P1.update_money(0, biddingNo);
-                        squares[currentPlayer->currentPos].setPlayerNo(P1.getPlayerNo());
-                        squares[currentPlayer->currentPos].setBuyable(0);
-                    } else if (auctionTurn == AuctionTurn::player2_turn) {
                         P2.update_money(0, biddingNo);
                         squares[currentPlayer->currentPos].setPlayerNo(P2.getPlayerNo());
+                        squares[currentPlayer->currentPos].setBuyable(0);
+                    } else if (auctionTurn == AuctionTurn::player2_turn) {
+                        P1.update_money(0, biddingNo);
+                        squares[currentPlayer->currentPos].setPlayerNo(P1.getPlayerNo());
                         squares[currentPlayer->currentPos].setBuyable(0);
                     }
                     biddingNo = 0;
