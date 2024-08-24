@@ -186,6 +186,7 @@ int main()
     Text same_roll_notif(font, "Same numbers! Roll again.", sf::Color::Black, 48, sf::Vector2f(250.f,250.f));
     Text buying_phase(font, "BUY?", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
     Text auction_phase(font, "AUCTION?", sf::Color::Black, 48, sf::Vector2f(600.f,350.f));
+    Text forfeit(font, "FORFEIT?", sf::Color::Black, 48, sf::Vector2f(300.f,700.f));
     Text remortgage(font, "REMORTGAGE?", sf::Color::Black, 48, sf::Vector2f(500.f,600.f));
     Text mortgage(font, "MORTGAGE?", sf::Color::Black, 48, sf::Vector2f(500.f,700.f));
     Text end_mortgage(font, "END", sf::Color::Black, 48, sf::Vector2f(700.f,700.f));
