@@ -365,6 +365,7 @@ int main()
                     if (biddingNo < 1) auction_notes.setText("Enter value higher than 1!");
                     else if (biddingNo <= previousBiddingNo) auction_notes.setText("Set value higher than previous bid!");
                     else {
+                        auction_notes.setText("How much?");
                         previousBiddingNo = biddingNo;
                         std::string previousBiddingStr = "Previous bid: " + std::to_string(previousBiddingNo);
                         biddingNoText.setText(previousBiddingStr);

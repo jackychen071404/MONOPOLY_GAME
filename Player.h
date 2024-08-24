@@ -13,6 +13,7 @@ class Player {
         unsigned int money;
         unsigned int getPlayerNo() const; 
         sf::Text money_text;
+        bool inJail;
 
         void update_money(bool add_or_cut, int amt);
     private: 

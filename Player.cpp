@@ -2,7 +2,7 @@
 #include <iostream>
 
 Player::Player(sf::Color fill_color, sf::Vector2f startPos, const sf::Vector2f positions[], const sf::Font& font, int player_no, sf::Vector2f moneyPos) 
-: player_no(player_no)
+: player_no(player_no), inJail(false)
 {
     shape.setRadius(10);
     shape.setFillColor(fill_color);
