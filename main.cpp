@@ -181,6 +181,7 @@ int main()
     bool same_roll = false;
     int biddingNo = 0;
     int previousBiddingNo = 0;
+    int sameRollCount = 0;
 
     //various game messages
     Text same_roll_notif(font, "Same numbers! Roll again.", sf::Color::Black, 48, sf::Vector2f(250.f,250.f));
@@ -233,12 +234,14 @@ int main()
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 if (dice.shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
                 {
-                    currentPhase = GamePhase::RollingDice;
-                    dice.die1 = 6;//dis(gen);
-                    dice.die2 = 4;//dis(gen);
+                    dice.die1 = dis(gen);
+                    dice.die2 = dis(gen);
                     dice.roll_result = dice.die1+dice.die2;
                     dice.roll_display = dice.roll_result;
+                    if (dice.die1 != dice.die2) sameRollCount = 0;
                     same_roll = dice.die1==dice.die2;
+                    if (same_roll && currentPhase != GamePhase::RollingDice) sameRollCount++;
+                    currentPhase = GamePhase::RollingDice;
 
                     if (currentTurn == PlayerTurn::player1_turn) dice.dice_info.setString("Player " + std::to_string(1) + ": " + std::to_string(dice.die1) + " and " + std::to_string(dice.die2));
                     else dice.dice_info.setString("Player " + std::to_string(2) + ": " + std::to_string(dice.die1) + " and " + std::to_string(dice.die2));
@@ -382,7 +385,7 @@ int main()
                 }
             }
         }
-
+        std::cout<<sameRollCount<<std::endl;
         //std::cout << squares[currentPlayer->currentPos].getPlayerNo() << std::endl;
         sf::Time elapsed1 = clock.getElapsedTime();
         if (dice.roll_indices < dice.roll_result) {
@@ -411,7 +414,6 @@ int main()
                         else if (currentPlayer->currentPos == 30) {
                             currentPlayer->inJail = true;
                             currentPhase = GamePhase::SendingtoJail;
-                            //std::cout<<"oh no"<<std::endl;
                         }
                         if (currentPhase != GamePhase::SendingtoJail) currentPhase = GamePhase::isNot_buying_phase;
                         returnToBuy = false;
@@ -419,23 +421,41 @@ int main()
                 }
                 clock.restart();
             }
-        } else {
-            if (same_roll) currentPhase = GamePhase::WaitForDice;
+        } else if (currentPhase != GamePhase::SendingtoJail) {
+            if (same_roll) {
+                currentPhase = GamePhase::WaitForDice;
+            }
             dice.roll_indices = 0;
             dice.roll_result = 0;
         }
+
+        if (sameRollCount == 3) {
+            currentPhase = GamePhase::SendingtoJail;
+            sameRollCount = 0;
+            jail_notif.setText("3 SAME ROLLS! GO TO JAIL");
+        }
+
+        //check 3 same rolls for jail
         //std::cout << to_string(auctionTurn) << std::endl;
         if (currentPhase == GamePhase::SendingtoJail) {
-            static int jailer = 30;
-             if (elapsed1.asMilliseconds() >= 200) {
-                currentPlayer->currentPos--;
-                jailer--;
+            int jailer = currentPlayer->currentPos;
+            if (elapsed1.asMilliseconds() >= 200) {
+                if (currentPlayer->currentPos > 10) {
+                    currentPlayer->currentPos--;
+                    jailer--;
+                } else if (currentPlayer->currentPos < 10) {
+                    currentPlayer->currentPos++;
+                    jailer++;
+                } else {
+                    pass;
+                }
                 currentPlayer->shape.setPosition(currentPlayer->position_coordinates[currentPlayer->currentPos]);
                 if (jailer == 10) {
                     currentPhase = GamePhase::WaitForDice;
+                    jail_notif.setText("GO TO JAIL");
                     if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
-                    jailer = 30;
+                    jailer = otherPlayer->currentPos;
                 }
                 clock.restart(); 
             }
