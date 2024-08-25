@@ -403,12 +403,13 @@ int main()
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
                     else currentPhase = GamePhase::inJail;
-                } else if (roll_freedom.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                } else if (roll_freedom.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && jailRollCount < 4) {
                     jail_dice.die1 = dis(gen);
                     jail_dice.die2 = dis(gen);
                     if (currentTurn == PlayerTurn::player1_turn) jail_rolls.setText("Player " + std::to_string(1) + ": " + std::to_string(jail_dice.die1) + " and " + std::to_string(jail_dice.die2));
                     else jail_rolls.setText("Player " + std::to_string(2) + ": " + std::to_string(jail_dice.die1) + " and " + std::to_string(jail_dice.die2));
                     if (jail_dice.die1 == jail_dice.die2) currentPlayer->inJail=false;
+                    jailRollCount++;
                     if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
@@ -465,7 +466,7 @@ int main()
             jail_notif.setText("3 SAME ROLLS! GO TO JAIL");
         }
 
-        std::cout << to_string(currentPhase) << " " << currentPlayer->inJail << same_roll << std::endl;
+        //std::cout << to_string(currentPhase) << " " << currentPlayer->inJail << same_roll << std::endl;
         if (currentPhase == GamePhase::SendingtoJail) {
             int jailer = currentPlayer->currentPos;
             if (elapsed1.asMilliseconds() >= 200) {
@@ -521,7 +522,7 @@ int main()
             else who_jail.setText("Player 2 in jail");
             window.draw(who_jail.content);
             window.draw(pay50.content);
-            window.draw(roll_freedom.content);
+            if (jailRollCount < 4) window.draw(roll_freedom.content);
             window.draw(jail_rolls.content);
         }
         if (currentPhase == GamePhase::RollingDice) window.draw(dice.dice_info);
