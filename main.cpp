@@ -189,12 +189,12 @@ int main()
     Text same_roll_notif(font, "Same numbers! Roll again.", sf::Color::Black, 48, sf::Vector2f(250.f,250.f));
     Text buying_phase(font, "BUY?", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
     Text auction_phase(font, "AUCTION?", sf::Color::Black, 48, sf::Vector2f(600.f,350.f));
-    Text forfeit(font, "FORFEIT?", sf::Color::Black, 48, sf::Vector2f(300.f,700.f));
     Text trade(font, "TRADE?", sf::Color::Black, 48, sf::Vector2f(500.f,400.f));
     Text offer(font, "OFFER", sf::Color::Black, 48, sf::Vector2f(500.f,700.f));
     Text request(font, "REQUEST", sf::Color::Black, 48, sf::Vector2f(500.f,700.f));
     TextBox moneyOffer(350, 600, 300, 50, font);
     TextBox moneyRequest(350, 600, 300, 50, font);
+    Text forfeit(font, "BANKRUPT?", sf::Color::Black, 48, sf::Vector2f(140.f,700.f));
     Text accept(font, "ACCEPT?", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
     Text refuse(font, "REFUSE?", sf::Color::Black, 48, sf::Vector2f(600.f,350.f));
     Text remortgage(font, "REMORTGAGE?", sf::Color::Black, 48, sf::Vector2f(500.f,600.f));
@@ -215,6 +215,7 @@ int main()
     Text GIVE(font, "GIVE UP!", sf::Color::Black, 48, sf::Vector2f(700.f, 700.f));
     Text biddingNoText(font, "Previous bid: 0", sf::Color::Black, 48, sf::Vector2f(120.f, 120.f));
     Text auc_turn(font, "Auction Turn: ", sf::Color::Black, 48, sf::Vector2f(650.f, 120.f));
+    Text game_decision(font,"",sf::Color::Black,100,sf::Vector2f(150,500));
 
     GamePhase currentPhase = GamePhase::WaitForDice;
     PlayerTurn currentTurn = PlayerTurn::player1_turn;
@@ -283,6 +284,8 @@ int main()
                     currentPhase = GamePhase::auctioning;
                 }   else if (trade.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     currentPhase = GamePhase::trading;
+                }   else if (forfeit.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    currentPhase = GamePhase::game_decided;
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::mortgaging) {
@@ -339,16 +342,18 @@ int main()
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::isNot_buying_phase) {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 if (mortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                    currentPhase = GamePhase::mortgaging;
+                        currentPhase = GamePhase::mortgaging;
                 }   else if (remortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                    currentPhase = GamePhase::remortgaging;
+                        currentPhase = GamePhase::remortgaging;
                 }   else if (trade.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                    currentPhase = GamePhase::trading;
+                        currentPhase = GamePhase::trading;
+                }   else if (forfeit.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                        currentPhase = GamePhase::game_decided;
                 }   else if (pass.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                    if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
-                    else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
-                    if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
-                    else currentPhase = GamePhase::inJail;
+                        if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
+                        else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
+                        if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
+                        else currentPhase = GamePhase::inJail;
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::auctioning) {
@@ -628,6 +633,7 @@ int main()
             window.draw(mortgage.content);
             window.draw(remortgage.content);
             window.draw(trade.content);
+            window.draw(forfeit.content);
         } else if (currentPhase == GamePhase::mortgaging || currentPhase == GamePhase::remortgaging) {
             window.draw(end_mortgage.content);
         } else if (currentPhase == GamePhase::isNot_buying_phase) {
@@ -635,7 +641,8 @@ int main()
             window.draw(remortgage.content);
             window.draw(trade.content);
             window.draw(pass.content);
-        } else if (currentPhase == GamePhase::auctioning) {
+            window.draw(forfeit.content);
+        }   else if (currentPhase == GamePhase::auctioning) {
             textBox.draw(window);
             window.draw(how_much.content);
             window.draw(auction_notes.content);
@@ -643,25 +650,28 @@ int main()
             if (!textBox.getText().empty() && firstBid) window.draw(GIVE.content);
             window.draw(biddingNoText.content);
             window.draw(auc_turn.content);
-        } else if (currentPhase == GamePhase::SendingtoJail) {
+        }   else if (currentPhase == GamePhase::SendingtoJail) {
             window.draw(jail_notif.content);
-        } else if (currentPhase == GamePhase::inJail) {
+        }   else if (currentPhase == GamePhase::inJail) {
             if (currentTurn == PlayerTurn::player1_turn) who_jail.setText("Player 1 in jail");
             else who_jail.setText("Player 2 in jail");
             window.draw(who_jail.content);
             window.draw(pay50.content);
             if (jailRollCount < 4) window.draw(roll_freedom.content);
             window.draw(jail_rolls.content);
-        } else if (currentPhase == GamePhase::trading) {
+        }   else if (currentPhase == GamePhase::trading) {
             moneyOffer.draw(window);
             window.draw(offer.content);
-        } else if (currentPhase == GamePhase::trade_request) {
+        }   else if (currentPhase == GamePhase::trade_request) {
             moneyRequest.draw(window);
             window.draw(request.content);
-        }
-        else if (currentPhase == GamePhase::trade_accept) {
+        }   else if (currentPhase == GamePhase::trade_accept) {
             window.draw(accept.content);
             window.draw(refuse.content);
+        }   else if (currentPhase == GamePhase::game_decided) {
+            if (currentTurn == PlayerTurn::player1_turn) game_decision.setText("PLAYER 2 WINS");
+            else game_decision.setText("PLAYER 1 WINS");
+            window.draw(game_decision.content);
         }
         if (currentPhase == GamePhase::RollingDice) window.draw(dice.dice_info);
         for (int i = 0; i < 40; i++) {
