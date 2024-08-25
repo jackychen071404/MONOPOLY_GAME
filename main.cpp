@@ -192,7 +192,9 @@ int main()
     Text forfeit(font, "FORFEIT?", sf::Color::Black, 48, sf::Vector2f(300.f,700.f));
     Text trade(font, "TRADE?", sf::Color::Black, 48, sf::Vector2f(500.f,400.f));
     Text offer(font, "OFFER", sf::Color::Black, 48, sf::Vector2f(500.f,700.f));
+    Text request(font, "REQUEST", sf::Color::Black, 48, sf::Vector2f(500.f,700.f));
     TextBox moneyOffer(350, 600, 300, 50, font);
+    TextBox moneyRequest(350, 600, 300, 50, font);
     Text accept(font, "ACCEPT?", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
     Text refuse(font, "REFUSE?", sf::Color::Black, 48, sf::Vector2f(600.f,350.f));
     Text remortgage(font, "REMORTGAGE?", sf::Color::Black, 48, sf::Vector2f(500.f,600.f));
@@ -239,6 +241,8 @@ int main()
             if (event.type == sf::Event::Closed) window.close();
             if (currentPhase == GamePhase::auctioning) {
                 if (textBox.getFocus()) textBox.handleEvent(event);
+            } else if (currentPhase == GamePhase::trade_request) {
+                if (moneyRequest.getFocus()) moneyRequest.handleEvent(event);
             } else if (currentPhase == GamePhase::trading) {
                 if (moneyOffer.getFocus()) moneyOffer.handleEvent(event);
             }
@@ -444,9 +448,30 @@ int main()
                     }
                 }
                 if (offer.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                    currentPhase = GamePhase::trade_accept;
+                    currentPhase = GamePhase::trade_request;
                 }
 
+            }
+            else if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::trade_request)  {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if (moneyRequest.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    moneyRequest.setFocus(true);
+                }   else {
+                    moneyRequest.setFocus(false);
+                }
+
+                for (int i = 0; i < 40; i++) {
+                    if (squares[i].getPlayerNo() == otherPlayer->getPlayerNo()) {
+                        if (squares[i].bought_circle.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                            squares[i].setPlayerNo(6);
+                            squares[i].bought_circle.setOutlineColor(sf::Color::Cyan);
+                        }
+                    }
+                }
+
+                if (offer.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    currentPhase = GamePhase::trade_accept;
+                }
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::trade_accept) {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
@@ -460,6 +485,59 @@ int main()
                     }
                 }
                 if (refuse.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    for (int i = 0; i < 40; i++) {
+                        if (squares[i].getPlayerNo() == 5) {
+                            if (currentTurn == PlayerTurn::player1_turn) {
+                                squares[i].setPlayerNo(1);
+                                squares[i].bought_circle.setOutlineColor(sf::Color::Red);
+                            } else if (currentTurn == PlayerTurn::player2_turn) {
+                                squares[i].setPlayerNo(2);
+                                squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
+                            }
+                        } else if (squares[i].getPlayerNo() == 6) {
+                            if (currentTurn == PlayerTurn::player1_turn) {
+                                squares[i].setPlayerNo(2);
+                                squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
+                            } else if (currentTurn == PlayerTurn::player2_turn) {
+                                squares[i].setPlayerNo(1);
+                                squares[i].bought_circle.setOutlineColor(sf::Color::Red);
+                            }
+                        }
+                    }
+                    moneyOffer.clear();
+                    moneyRequest.clear();
+                    if (squares[currentPlayer->currentPos].getBuyable())currentPhase = GamePhase::is_buying_phase;
+                    else currentPhase = GamePhase::isNot_buying_phase;
+                } else if (accept.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    if (moneyOffer.getText() != "") {
+                        currentPlayer->update_money(0,std::stoi(moneyOffer.getText()));
+                        otherPlayer->update_money(1,std::stoi(moneyOffer.getText()));
+                    }
+                    if (moneyRequest.getText() != "") {
+                        currentPlayer->update_money(1,std::stoi(moneyRequest.getText()));
+                        otherPlayer->update_money(0,std::stoi(moneyRequest.getText()));
+                    }
+                    for (int i = 0; i < 40; i++) {
+                        if (squares[i].getPlayerNo() == 5) {
+                            if (currentTurn == PlayerTurn::player1_turn) {
+                                squares[i].setPlayerNo(2);
+                                squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
+                            } else if (currentTurn == PlayerTurn::player2_turn) {
+                                squares[i].setPlayerNo(1);
+                                squares[i].bought_circle.setOutlineColor(sf::Color::Red);
+                            }
+                        } else if (squares[i].getPlayerNo() == 6) {
+                            if (currentTurn == PlayerTurn::player1_turn) {
+                                squares[i].setPlayerNo(1);
+                                squares[i].bought_circle.setOutlineColor(sf::Color::Red);
+                            } else if (currentTurn == PlayerTurn::player2_turn) {
+                                squares[i].setPlayerNo(2);
+                                squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
+                            }
+                        }
+                    }
+                    moneyOffer.clear();
+                    moneyRequest.clear();
                     if (squares[currentPlayer->currentPos].getBuyable())currentPhase = GamePhase::is_buying_phase;
                     else currentPhase = GamePhase::isNot_buying_phase;
                 }
@@ -577,7 +655,11 @@ int main()
         } else if (currentPhase == GamePhase::trading) {
             moneyOffer.draw(window);
             window.draw(offer.content);
-        } else if (currentPhase == GamePhase::trade_accept) {
+        } else if (currentPhase == GamePhase::trade_request) {
+            moneyRequest.draw(window);
+            window.draw(request.content);
+        }
+        else if (currentPhase == GamePhase::trade_accept) {
             window.draw(accept.content);
             window.draw(refuse.content);
         }
