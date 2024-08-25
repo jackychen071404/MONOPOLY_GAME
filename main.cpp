@@ -190,6 +190,11 @@ int main()
     Text buying_phase(font, "BUY?", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
     Text auction_phase(font, "AUCTION?", sf::Color::Black, 48, sf::Vector2f(600.f,350.f));
     Text forfeit(font, "FORFEIT?", sf::Color::Black, 48, sf::Vector2f(300.f,700.f));
+    Text trade(font, "TRADE?", sf::Color::Black, 48, sf::Vector2f(500.f,400.f));
+    Text offer(font, "OFFER", sf::Color::Black, 48, sf::Vector2f(500.f,700.f));
+    TextBox moneyOffer(350, 600, 300, 50, font);
+    Text accept(font, "ACCEPT?", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
+    Text refuse(font, "REFUSE?", sf::Color::Black, 48, sf::Vector2f(600.f,350.f));
     Text remortgage(font, "REMORTGAGE?", sf::Color::Black, 48, sf::Vector2f(500.f,600.f));
     Text mortgage(font, "MORTGAGE?", sf::Color::Black, 48, sf::Vector2f(500.f,700.f));
     Text end_mortgage(font, "END", sf::Color::Black, 48, sf::Vector2f(700.f,700.f));
@@ -234,6 +239,8 @@ int main()
             if (event.type == sf::Event::Closed) window.close();
             if (currentPhase == GamePhase::auctioning) {
                 if (textBox.getFocus()) textBox.handleEvent(event);
+            } else if (currentPhase == GamePhase::trading) {
+                if (moneyOffer.getFocus()) moneyOffer.handleEvent(event);
             }
 
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::WaitForDice)
@@ -241,8 +248,8 @@ int main()
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 if (dice.shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
                 {
-                    dice.die1 = 3;//dis(gen);
-                    dice.die2 = 3;//dis(gen);
+                    dice.die1 = dis(gen);
+                    dice.die2 = dis(gen);
                     dice.roll_result = dice.die1+dice.die2;
                     dice.roll_display = dice.roll_result;
                     if (dice.die1 != dice.die2) sameRollCount = 0;
@@ -270,6 +277,8 @@ int main()
                     currentPhase = GamePhase::remortgaging;
                 }   else if (auction_phase.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     currentPhase = GamePhase::auctioning;
+                }   else if (trade.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    currentPhase = GamePhase::trading;
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::mortgaging) {
@@ -329,7 +338,9 @@ int main()
                     currentPhase = GamePhase::mortgaging;
                 }   else if (remortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     currentPhase = GamePhase::remortgaging;
-                } else if (pass.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                }   else if (trade.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    currentPhase = GamePhase::trading;
+                }   else if (pass.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
@@ -414,6 +425,24 @@ int main()
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
                     else currentPhase = GamePhase::inJail;
+                }
+            }
+            if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::trading) {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if (moneyOffer.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    moneyOffer.setFocus(true);
+                }   else {
+                    moneyOffer.setFocus(false);
+                }
+                if (offer.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    currentPhase = GamePhase::trade_accept;
+                }
+            }
+            if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::trade_accept) {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if (refuse.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    if (squares[currentPlayer->currentPos].getBuyable())currentPhase = GamePhase::is_buying_phase;
+                    else currentPhase = GamePhase::isNot_buying_phase;
                 }
             }
         }
@@ -501,11 +530,13 @@ int main()
             window.draw(auction_phase.content);
             window.draw(mortgage.content);
             window.draw(remortgage.content);
+            window.draw(trade.content);
         } else if (currentPhase == GamePhase::mortgaging || currentPhase == GamePhase::remortgaging) {
             window.draw(end_mortgage.content);
         } else if (currentPhase == GamePhase::isNot_buying_phase) {
             window.draw(mortgage.content);
             window.draw(remortgage.content);
+            window.draw(trade.content);
             window.draw(pass.content);
         } else if (currentPhase == GamePhase::auctioning) {
             textBox.draw(window);
@@ -524,6 +555,12 @@ int main()
             window.draw(pay50.content);
             if (jailRollCount < 4) window.draw(roll_freedom.content);
             window.draw(jail_rolls.content);
+        } else if (currentPhase == GamePhase::trading) {
+            moneyOffer.draw(window);
+            window.draw(offer.content);
+        } else if (currentPhase == GamePhase::trade_accept) {
+            window.draw(accept.content);
+            window.draw(refuse.content);
         }
         if (currentPhase == GamePhase::RollingDice) window.draw(dice.dice_info);
         for (int i = 0; i < 40; i++) {

@@ -11,6 +11,11 @@ enum class AuctionTurn {
     player2_turn,
 };
 
+enum class TradeTurn {
+    player1_turn,
+    player2_turn,
+};
+
 enum class GamePhase {
     WaitForDice,
     RollingDice,
@@ -21,9 +26,12 @@ enum class GamePhase {
     auctioning,
     mortgaging,
     remortgaging,
+    trading,
+    trade_accept,
 };
 std::string to_string(GamePhase phase);
 std::string to_string(PlayerTurn turn);
 std::string to_string(AuctionTurn turn);
+std::string to_string(TradeTurn turn);
 
 #endif // GAMESTATES_H
