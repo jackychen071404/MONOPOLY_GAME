@@ -125,6 +125,8 @@ int main()
     Player P2(sf::Color::Blue, sf::Vector2f(930.f,910.f), positions2, font, 2, sf::Vector2f(150, 800));
 
     Dice dice(font); //dice object
+    Dice jail_dice(font);
+    unsigned int jailRollCount = 0;
 
     //array of Squares
     Square squares[40] = {
@@ -196,6 +198,7 @@ int main()
     Text who_jail(font, "", sf::Color::Black, 48, sf::Vector2f(250.f,350.f));
     Text pay50(font, "PAY 50$?", sf::Color::Black,48,sf::Vector2f(300,300));
     Text roll_freedom(font, "ROLL?", sf::Color::Black,48,sf::Vector2f(600,300));
+    Text jail_rolls(font, "", sf::Color::Black,48,sf::Vector2f(200,600));
     Text p1_notif(font, "+$", sf::Color::Black, 48, sf::Vector2f(600,750));
     Text p2_notif(font, "+$", sf::Color::Black, 48, sf::Vector2f(600,800));
     TextBox textBox(350, 600, 300, 50, font);
@@ -225,6 +228,7 @@ int main()
             otherPlayer = &P1;
         }
         sf::Event event;
+        sf::Time elapsed1 = clock.getElapsedTime();
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed) window.close();
@@ -399,13 +403,20 @@ int main()
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
                     else currentPhase = GamePhase::inJail;
-                } else if (pay50.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                    
+                } else if (roll_freedom.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    jail_dice.die1 = dis(gen);
+                    jail_dice.die2 = dis(gen);
+                    if (currentTurn == PlayerTurn::player1_turn) jail_rolls.setText("Player " + std::to_string(1) + ": " + std::to_string(jail_dice.die1) + " and " + std::to_string(jail_dice.die2));
+                    else jail_rolls.setText("Player " + std::to_string(2) + ": " + std::to_string(jail_dice.die1) + " and " + std::to_string(jail_dice.die2));
+                    if (jail_dice.die1 == jail_dice.die2) currentPlayer->inJail=false;
+                    if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
+                    else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
+                    if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
+                    else currentPhase = GamePhase::inJail;
                 }
             }
         }
         //std::cout << squares[currentPlayer->currentPos].getPlayerNo() << std::endl;
-        sf::Time elapsed1 = clock.getElapsedTime();
         if (dice.roll_indices < dice.roll_result) {
             if (elapsed1.asMilliseconds() >= 100) {
                 if (currentPlayer->currentPos == 39) { //making sure to loop back
@@ -454,7 +465,7 @@ int main()
             jail_notif.setText("3 SAME ROLLS! GO TO JAIL");
         }
 
-        //std::cout << to_string(currentPhase) << " " << currentPlayer->inJail << same_roll << std::endl;
+        std::cout << to_string(currentPhase) << " " << currentPlayer->inJail << same_roll << std::endl;
         if (currentPhase == GamePhase::SendingtoJail) {
             int jailer = currentPlayer->currentPos;
             if (elapsed1.asMilliseconds() >= 200) {
@@ -511,8 +522,9 @@ int main()
             window.draw(who_jail.content);
             window.draw(pay50.content);
             window.draw(roll_freedom.content);
+            window.draw(jail_rolls.content);
         }
-        
+        if (currentPhase == GamePhase::RollingDice) window.draw(dice.dice_info);
         for (int i = 0; i < 40; i++) {
             if (squares[i].getPlayerNo() == 1) squares[i].bought_circle.setOutlineColor(sf::Color::Red);
             if (squares[i].getPlayerNo() == 2) squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
@@ -521,7 +533,6 @@ int main()
         window.draw(P1.shape);
         window.draw(P2.shape);
         window.draw(dice.shape);
-        window.draw(dice.dice_info);
         window.draw(P1.money_text);
         window.draw(P2.money_text);
         window.display();
