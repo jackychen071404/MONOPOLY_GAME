@@ -27,6 +27,7 @@ enum class GamePhase {
     mortgaging,
     remortgaging,
     trading,
+    trade_request,
     trade_accept,
 };
 std::string to_string(GamePhase phase);
