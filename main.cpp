@@ -192,6 +192,7 @@ int main()
     Text trade(font, "TRADE?", sf::Color::Black, 48, sf::Vector2f(500.f,400.f));
     Text offer(font, "OFFER", sf::Color::Black, 48, sf::Vector2f(500.f,700.f));
     Text request(font, "REQUEST", sf::Color::Black, 48, sf::Vector2f(500.f,700.f));
+    Text trade_notif(font, "CAN'T AFFORD", sf::Color::Black, 48, sf::Vector2f(500.f,650.f));
     TextBox moneyOffer(350, 600, 300, 50, font);
     TextBox moneyRequest(350, 600, 300, 50, font);
     Text forfeit(font, "BANKRUPT?", sf::Color::Black, 48, sf::Vector2f(140.f,700.f));
@@ -268,7 +269,7 @@ int main()
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::is_buying_phase) {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                if (buying_phase.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                if (buying_phase.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && squares[currentPlayer->currentPos].getPrice() <= currentPlayer->money) {
                     currentPlayer->update_money(0,squares[currentPlayer->currentPos].getPrice());
                     squares[currentPlayer->currentPos].setPlayerNo(currentPlayer->getPlayerNo());
                     squares[currentPlayer->currentPos].setBuyable(0);
@@ -280,7 +281,7 @@ int main()
                     currentPhase = GamePhase::mortgaging;
                 }   else if (remortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     currentPhase = GamePhase::remortgaging;
-                }   else if (auction_phase.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                }   else if (auction_phase.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && currentPlayer->money > 0) {
                     currentPhase = GamePhase::auctioning;
                 }   else if (trade.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     currentPhase = GamePhase::trading;
@@ -321,7 +322,7 @@ int main()
                     for (int i = 0; i < 40; i++) {
                         if (currentPlayer->getPlayerNo() == 1) {
                             if (squares[i].getPlayerNo() == 3) {
-                                if (squares[i].bought_circle.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                                if (squares[i].bought_circle.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)) && currentPlayer->money >= squares[i].getPrice() * .5 * 1.1) {
                                     currentPlayer->update_money(0, squares[i].getPrice() * .5 * 1.1);
                                     squares[i].bought_circle.setOutlineColor(sf::Color::Red);
                                     squares[i].setPlayerNo(1);
@@ -375,7 +376,7 @@ int main()
                     textBox.setFocus(false);
                 }
 
-                if (GIVE.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && !textBox.getText().empty()) {
+                if (GIVE.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && !textBox.getText().empty() && firstBid) {
                     if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     if (auctionTurn == AuctionTurn::player1_turn)  {
@@ -394,11 +395,43 @@ int main()
                     firstAuction = true;
                     //reset auction values
                 } else if (bid.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                    firstBid = true;
-                    biddingNo = std::stoi(textBox.getText());
-                    if (biddingNo < 1) auction_notes.setText("Enter value higher than 1!");
-                    else if (biddingNo <= previousBiddingNo) auction_notes.setText("Set value higher than previous bid!");
+                    if (textBox.getText() != "") biddingNo = std::stoi(textBox.getText());
+                    if (biddingNo < 1) {
+                        auction_notes.setText("Enter value higher than 1!");
+                        firstBid = false;
+                    }
+                    else if (auctionTurn == AuctionTurn::player1_turn && previousBiddingNo >= P1.money) {
+                        P2.update_money(0, previousBiddingNo);
+                        squares[currentPlayer->currentPos].setPlayerNo(P2.getPlayerNo());
+                        squares[currentPlayer->currentPos].setBuyable(0);
+                        biddingNo = 0;
+                        previousBiddingNo = 0;
+                        if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
+                        else currentPhase = GamePhase::inJail;
+                        firstAuction = true;
+                    } else if (auctionTurn == AuctionTurn::player2_turn && previousBiddingNo >= P2.money) {
+                        P1.update_money(0, previousBiddingNo);
+                        squares[currentPlayer->currentPos].setPlayerNo(P1.getPlayerNo());
+                        squares[currentPlayer->currentPos].setBuyable(0);
+                        biddingNo = 0;
+                        previousBiddingNo = 0;
+                        if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
+                        else currentPhase = GamePhase::inJail;
+                        firstAuction = true;
+                    }
+                    else if (biddingNo <= previousBiddingNo) {
+                        auction_notes.setText("Set value higher than previous bid!");
+                        firstBid = false;
+                    }
+                    else if (auctionTurn == AuctionTurn::player1_turn && biddingNo > P1.money) {
+                        auction_notes.setText("Can't afford!");
+                        firstBid = false;
+                    } else if (auctionTurn == AuctionTurn::player2_turn && biddingNo > P2.money) {
+                        auction_notes.setText("Can't afford!");
+                        firstBid = false;
+                    }
                     else {
+                        firstBid = true;
                         auction_notes.setText("How much?");
                         previousBiddingNo = biddingNo;
                         std::string previousBiddingStr = "Previous bid: " + std::to_string(previousBiddingNo);
@@ -453,9 +486,12 @@ int main()
                     }
                 }
                 if (offer.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                    currentPhase = GamePhase::trade_request;
+                    if (moneyOffer.getText() == "") {
+                        currentPhase = GamePhase::trade_request;
+                    } else if (std::stoi(moneyOffer.getText()) <= currentPlayer->money) {
+                        currentPhase = GamePhase::trade_request;
+                    }
                 }
-
             }
             else if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::trade_request)  {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
@@ -475,7 +511,11 @@ int main()
                 }
 
                 if (offer.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                    currentPhase = GamePhase::trade_accept;
+                    if (moneyRequest.getText() == "") {
+                        currentPhase = GamePhase::trade_accept;
+                    } else if (std::stoi(moneyRequest.getText()) <= otherPlayer->money) {
+                        currentPhase = GamePhase::trade_accept;
+                    }
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::trade_accept) {
@@ -628,8 +668,8 @@ int main()
         window.draw(sprite); // Draw the scaled sprite of the game board
         if (same_roll) window.draw(same_roll_notif.content);
         if (currentPhase == GamePhase::is_buying_phase) {
-            window.draw(buying_phase.content);
-            window.draw(auction_phase.content);
+            if (squares[currentPlayer->currentPos].getPrice() <= currentPlayer->money) window.draw(buying_phase.content);
+            if (currentPlayer->money > 0) window.draw(auction_phase.content);
             window.draw(mortgage.content);
             window.draw(remortgage.content);
             window.draw(trade.content);

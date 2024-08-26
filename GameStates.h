@@ -29,6 +29,8 @@ enum class GamePhase {
     trading,
     trade_request,
     trade_accept,
+    buy_houses,
+    pay_debts,
     game_decided,
 };
 std::string to_string(GamePhase phase);
