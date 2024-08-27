@@ -5,7 +5,7 @@
 
 class Square {
     public:
-        Square(const unsigned int num, const unsigned int price, const unsigned int house_price, const unsigned int rent0, const unsigned int rent1, const unsigned int rent2, const unsigned int rent3, const unsigned int rent4, const unsigned int rent5, 
+        Square(const sf::Font& font, const unsigned int num, const unsigned int price, const unsigned int house_price, const unsigned int rent0, const unsigned int rent1, const unsigned int rent2, const unsigned int rent3, const unsigned int rent4, const unsigned int rent5, 
         const std::string &type, bool buyable, unsigned int player_no, sf::Vector2f circlePosition, const int num_houses);
         unsigned int getNum() const;
         unsigned int getPrice() const;
@@ -19,6 +19,7 @@ class Square {
         std::string getType() const;
         int getNumHouses() const;
         void incrementHouses();
+        void decrementHouses();
         unsigned int returnRent();
         bool getBuyable() const;
         void setBuyable(bool truth);
@@ -26,6 +27,7 @@ class Square {
         void setPlayerNo(unsigned int new_no);
         bool owned;
         int houses;
+        sf::Text houseText;
         sf::CircleShape bought_circle;
 
     private:
