@@ -2,6 +2,7 @@
 #include <SFML/Window.hpp>
 #include <Windows.h>
 #include <string>
+#include <map>
 #include <iostream>
 #include <random>
 #include <cstdlib>
@@ -227,6 +228,15 @@ int main()
     Player* currentPlayer;
     Player* otherPlayer;
 
+    std::map<std::string, int> colorRequirements = {
+        {"blue", 2},
+        {"brown", 2},
+        {"cyan", 3},
+        {"pink", 3},
+        {"orange", 3},
+        {"red", 3},
+        {"green", 3}
+    };
     // Main loop
     while (window.isOpen())
     {
@@ -249,7 +259,7 @@ int main()
             } else if (currentPhase == GamePhase::trading) {
                 if (moneyOffer.getFocus()) moneyOffer.handleEvent(event);
             }
-
+            //std::cout<<P2.owned_properties["brown"]<<std::endl;
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::WaitForDice)
             {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
@@ -289,6 +299,8 @@ int main()
                     currentPhase = GamePhase::trading;
                 }   else if (forfeit.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                     currentPhase = GamePhase::game_decided;
+                }   else if (buy_hotels.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && currentPlayer->owned_all_of_color()) {
+                    currentPhase = GamePhase::buy_houses;
                 }
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::mortgaging) {
@@ -356,6 +368,8 @@ int main()
                         currentPhase = GamePhase::trading;
                 }   else if (forfeit.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                         currentPhase = GamePhase::game_decided;
+                }   else if (buy_hotels.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && currentPlayer->owned_all_of_color()) {
+                    currentPhase = GamePhase::buy_houses;
                 }   else if (pass.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                         if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                         else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
@@ -563,24 +577,28 @@ int main()
                         otherPlayer->update_money(0,std::stoi(moneyRequest.getText()));
                     }
                     for (int i = 0; i < 40; i++) {
-                        if (squares[i].getPlayerNo() == 5) {
+                        if (squares[i].getPlayerNo() == 5) { //offer accepted (magenta)
                             if (currentTurn == PlayerTurn::player1_turn) {
                                 squares[i].setPlayerNo(2);
                                 squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
                                 P1.owned_properties[squares[i].getType()]--;
+                                P2.owned_properties[squares[i].getType()]++;
                             } else if (currentTurn == PlayerTurn::player2_turn) {
                                 squares[i].setPlayerNo(1);
                                 squares[i].bought_circle.setOutlineColor(sf::Color::Red);
                                 P2.owned_properties[squares[i].getType()]--;
+                                P1.owned_properties[squares[i].getType()]++;
                             }
-                        } else if (squares[i].getPlayerNo() == 6) {
+                        } else if (squares[i].getPlayerNo() == 6) { //request accepted (cyan)
                             if (currentTurn == PlayerTurn::player1_turn) {
                                 squares[i].setPlayerNo(1);
                                 squares[i].bought_circle.setOutlineColor(sf::Color::Red);
                                 P1.owned_properties[squares[i].getType()]++;
+                                P2.owned_properties[squares[i].getType()]--;
                             } else if (currentTurn == PlayerTurn::player2_turn) {
                                 squares[i].setPlayerNo(2);
                                 squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
+                                P2.owned_properties[squares[i].getType()]++;
                                 P1.owned_properties[squares[i].getType()]--;
                             }
                         }
@@ -589,6 +607,24 @@ int main()
                     moneyRequest.clear();
                     if (squares[currentPlayer->currentPos].getBuyable())currentPhase = GamePhase::is_buying_phase;
                     else currentPhase = GamePhase::isNot_buying_phase;
+                }
+            }
+            if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::buy_houses) {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if (end_mortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && returnToBuy) {
+                    currentPhase = GamePhase::is_buying_phase;
+                } else if (end_mortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && !returnToBuy) {
+                    currentPhase = GamePhase::isNot_buying_phase;
+                } else {
+                    for (int i = 0; i < 40; i++) {
+                        if (currentPlayer->getPlayerNo() == squares[i].getPlayerNo()) {
+                            if (squares[i].bought_circle.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                                if (currentPlayer->owned_properties[squares[i].getType()] == colorRequirements[squares[i].getType()]) {
+                                    std::cout<<"fuck"<<std::endl;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -679,7 +715,7 @@ int main()
             window.draw(remortgage.content);
             window.draw(trade.content);
             window.draw(forfeit.content);
-        } else if (currentPhase == GamePhase::mortgaging || currentPhase == GamePhase::remortgaging) {
+        } else if (currentPhase == GamePhase::mortgaging || currentPhase == GamePhase::remortgaging || currentPhase == GamePhase::buy_houses) {
             window.draw(end_mortgage.content);
         } else if (currentPhase == GamePhase::isNot_buying_phase) {
             if (currentPlayer->owned_all_of_color()) window.draw(buy_hotels.content);

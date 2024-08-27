@@ -13,6 +13,7 @@ std::string to_string(GamePhase phase) {
         case GamePhase::SendingtoJail: return "SendingtoJail";
         case GamePhase::inJail: return "inJail";
         case GamePhase::trading: return "Trading";
+        case GamePhase::buy_houses: return "Buy houses";
         default: return "Unknown GamePhase";
     }
 }
