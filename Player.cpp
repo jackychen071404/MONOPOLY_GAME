@@ -4,7 +4,7 @@
 #include <string>
 
 Player::Player(sf::Color fill_color, sf::Vector2f startPos, const sf::Vector2f positions[], const sf::Font& font, int player_no, sf::Vector2f moneyPos) 
-: player_no(player_no), inJail(false)
+: player_no(player_no), inJail(false), no_trains(0)
 {
     shape.setRadius(10);
     shape.setFillColor(fill_color);

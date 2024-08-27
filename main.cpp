@@ -218,7 +218,10 @@ int main()
     Text GIVE(font, "GIVE UP!", sf::Color::Black, 48, sf::Vector2f(700.f, 700.f));
     Text biddingNoText(font, "Previous bid: 0", sf::Color::Black, 48, sf::Vector2f(120.f, 120.f));
     Text auc_turn(font, "Auction Turn: ", sf::Color::Black, 48, sf::Vector2f(650.f, 120.f));
+    Text pay_debts(font, "PAY?", sf::Color::Black, 48, sf::Vector2f(300.f,300.f));
+    Text pay_debts_or_lose(font, "PAY DEBTS OR FORFEIT", sf::Color::Black, 48, sf::Vector2f(200.f, 130.f));
     Text game_decision(font,"",sf::Color::Black,100,sf::Vector2f(150,500));
+
 
     GamePhase currentPhase = GamePhase::WaitForDice;
     PlayerTurn currentTurn = PlayerTurn::player1_turn;
@@ -227,6 +230,8 @@ int main()
     bool firstBid = false;
     Player* currentPlayer;
     Player* otherPlayer;
+    bool need_debts = false;
+    int debt = 0;
 
     std::map<std::string, int> colorRequirements = {
         {"blue", 2},
@@ -265,8 +270,8 @@ int main()
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 if (dice.shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
                 {
-                    dice.die1 = 1;//dis(gen);
-                    dice.die2 = 0;//dis(gen);
+                    dice.die1 = dis(gen);
+                    dice.die2 = dis(gen);
                     dice.roll_result = dice.die1+dice.die2;
                     dice.roll_display = dice.roll_result;
                     if (dice.die1 != dice.die2) sameRollCount = 0;
@@ -281,6 +286,7 @@ int main()
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::is_buying_phase) {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 if (buying_phase.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && squares[currentPlayer->currentPos].getPrice() <= currentPlayer->money) {
+                    if (currentPlayer->currentPos == 5 || currentPlayer->currentPos == 15 || currentPlayer->currentPos == 25 || currentPlayer->currentPos == 35) currentPlayer->no_trains++;
                     currentPlayer->update_money(0,squares[currentPlayer->currentPos].getPrice());
                     squares[currentPlayer->currentPos].setPlayerNo(currentPlayer->getPlayerNo());
                     squares[currentPlayer->currentPos].setBuyable(0);
@@ -305,11 +311,13 @@ int main()
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::mortgaging) {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                if (end_mortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && returnToBuy) {
+                if (end_mortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && returnToBuy && !need_debts) {
                     currentPhase = GamePhase::is_buying_phase;
-                } else if (end_mortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && !returnToBuy) {
+                } else if (end_mortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && !returnToBuy && !need_debts) {
                     currentPhase = GamePhase::isNot_buying_phase;
-                } else {
+                } else if (end_mortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && !returnToBuy && need_debts) {
+                    currentPhase = GamePhase::pay_debts;
+                }   else {
                     for (int i = 0; i < 40; i++) {
                         if (squares[i].getPlayerNo() == currentPlayer->getPlayerNo()) {
                             if (squares[i].bought_circle.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)) && squares[i].getNumHouses() == 0) {
@@ -433,6 +441,8 @@ int main()
                         squares[currentPlayer->currentPos].setBuyable(0);
                         biddingNo = 0;
                         previousBiddingNo = 0;
+                        if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
+                        else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                         if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
                         else currentPhase = GamePhase::inJail;
                         firstAuction = true;
@@ -442,6 +452,8 @@ int main()
                         squares[currentPlayer->currentPos].setBuyable(0);
                         biddingNo = 0;
                         previousBiddingNo = 0;
+                        if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
+                        else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                         if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
                         else currentPhase = GamePhase::inJail;
                         firstAuction = true;
@@ -476,8 +488,15 @@ int main()
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::inJail) {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                if (pay50.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                if (pay50.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && currentPlayer->money >= 50) {
                     currentPlayer->update_money(0, 50);
+                    currentPlayer->inJail = false;
+                    if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
+                    else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
+                    if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
+                    else currentPhase = GamePhase::inJail;
+                } if (pay50.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && currentPlayer->money < 50) {
+                    currentPlayer->update_money(0, currentPlayer->money);
                     currentPlayer->inJail = false;
                     if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
@@ -494,7 +513,7 @@ int main()
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
                     else currentPhase = GamePhase::inJail;
-                }
+                } 
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::trading) {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
@@ -624,7 +643,6 @@ int main()
                         if (currentPlayer->getPlayerNo() == squares[i].getPlayerNo()) {
                             if (squares[i].bought_circle.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
                                 if (currentPlayer->owned_properties[squares[i].getType()] == colorRequirements[squares[i].getType()]) {
-                                    std::cout<<"fuck"<<std::endl;
                                     if (squares[i].getNumHouses() < 5) {
                                         currentPlayer->update_money(0, squares[i].getHousePrice());
                                         squares[i].incrementHouses();
@@ -634,6 +652,17 @@ int main()
                             }
                         }
                     }
+                }
+            }
+            if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::pay_debts) {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if (forfeit.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    currentPhase = GamePhase::game_decided;
+                } else if (mortgage.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                    currentPhase = GamePhase::mortgaging;
+                }   else if (pay_debts.getBounds().contains(static_cast<sf::Vector2f>(mousePos)) && currentPlayer->money >= debt) {
+                    currentPlayer->update_money(0, debt);
+                    currentPhase = GamePhase::isNot_buying_phase;
                 }
             }
         }
@@ -655,17 +684,65 @@ int main()
                         returnToBuy = true;
                     }
                     else {
+                        if (currentPhase != GamePhase::SendingtoJail) {
+                            currentPhase = GamePhase::isNot_buying_phase;
+                        }
                         if (squares[currentPlayer->currentPos].getPlayerNo() != currentPlayer->getPlayerNo() && squares[currentPlayer->currentPos].bought_circle.getOutlineColor() != sf::Color::Yellow && squares[currentPlayer->currentPos].bought_circle.getOutlineColor() != sf::Color::Green) {
-                            currentPlayer->update_money(0, squares[currentPlayer->currentPos].returnRent());
-                            otherPlayer->update_money(1, squares[currentPlayer->currentPos].returnRent());
+                            if (currentPlayer->money >= squares[currentPlayer->currentPos].returnRent()) {
+                                currentPlayer->update_money(0, squares[currentPlayer->currentPos].returnRent());
+                                otherPlayer->update_money(1, squares[currentPlayer->currentPos].returnRent());
+                            } else {
+                                debt = squares[currentPlayer->currentPos].returnRent();
+                                need_debts =true;
+                                currentPhase = GamePhase::pay_debts;
+                            }
                         } 
-                        if (currentPlayer->currentPos == 4) currentPlayer->update_money(0, 200);
-                        else if (currentPlayer->currentPos == 38) currentPlayer->update_money(0, 100); //two fees
+                        if (currentPlayer->currentPos == 4) { //special squares
+                           if (currentPlayer->money >= 200) {
+                                currentPlayer->update_money(0, 200); //two fees
+                            } else {
+                                debt = 200;
+                                need_debts =true;
+                                currentPhase = GamePhase::pay_debts;
+                            } 
+                        } else if (currentPlayer->currentPos == 38) {
+                            if (currentPlayer->money >= 100) {
+                                currentPlayer->update_money(0, 100); //two fees
+                            } else {
+                                debt = 100;
+                                need_debts =true;
+                                currentPhase = GamePhase::pay_debts;
+                            }
+                        } else if ((currentPlayer->currentPos == 12 && squares[12].getPlayerNo() != currentPlayer->getPlayerNo())|| (currentPlayer->currentPos == 28 && squares[28].getPlayerNo() != currentPlayer->getPlayerNo())) {
+                            int payment;
+                            if (squares[12].getPlayerNo() == otherPlayer->getPlayerNo() && squares[28].getPlayerNo() == otherPlayer->getPlayerNo()) payment = dice.roll_result * 10;
+                            else payment = dice.roll_result * 4;
+                            if (currentPlayer->money >= payment) {
+                                currentPlayer->update_money(0, payment); //utility fees
+                                otherPlayer->update_money(1, payment);
+                            } else {
+                                debt = payment;
+                                need_debts =true;
+                                currentPhase = GamePhase::pay_debts;
+                            }
+                        } else if ((currentPlayer->currentPos == 5 && squares[5].getPlayerNo() != currentPlayer->getPlayerNo())|| (currentPlayer->currentPos == 15 && squares[15].getPlayerNo() != currentPlayer->getPlayerNo())||(currentPlayer->currentPos == 25 && squares[25].getPlayerNo() != currentPlayer->getPlayerNo())||(currentPlayer->currentPos == 35 && squares[35].getPlayerNo() != currentPlayer->getPlayerNo())) {
+                            int payment = 50;
+                            if (otherPlayer->no_trains == 2) payment = 100;
+                            else if (otherPlayer->no_trains == 3) payment = 150;
+                            else if (otherPlayer->no_trains == 4) payment = 200;
+                            if (currentPlayer->money >= payment - 50) {
+                                currentPlayer->update_money(0, payment - 50);
+                                otherPlayer->update_money(1, payment -50);
+                            }   else {
+                                debt = payment-50;
+                                need_debts =true;
+                                currentPhase = GamePhase::pay_debts;
+                            }
+                        }
                         else if (currentPlayer->currentPos == 30) {
                             currentPlayer->inJail = true;
                             currentPhase = GamePhase::SendingtoJail;
                         }
-                        if (currentPhase != GamePhase::SendingtoJail) currentPhase = GamePhase::isNot_buying_phase;
                         returnToBuy = false;
                     }
                 }
@@ -713,6 +790,7 @@ int main()
             }
         }
         
+        //all drawing logic
         window.clear();
         window.draw(sprite); // Draw the scaled sprite of the game board
         if (same_roll) window.draw(same_roll_notif.content);
@@ -759,6 +837,11 @@ int main()
         }   else if (currentPhase == GamePhase::trade_accept) {
             window.draw(accept.content);
             window.draw(refuse.content);
+        }   else if (currentPhase == GamePhase::pay_debts) {
+            window.draw(pay_debts_or_lose.content);
+            if (currentPlayer->money >= squares[currentPlayer->currentPos].returnRent()) window.draw(pay_debts.content);
+            window.draw(forfeit.content);
+            window.draw(mortgage.content);
         }   else if (currentPhase == GamePhase::game_decided) {
             if (currentTurn == PlayerTurn::player1_turn) game_decision.setText("PLAYER 2 WINS");
             else game_decision.setText("PLAYER 1 WINS");
