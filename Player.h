@@ -14,8 +14,9 @@ class Player {
         unsigned int getPlayerNo() const; 
         sf::Text money_text;
         bool inJail;
-
         void update_money(bool add_or_cut, int amt);
+        std::map<std::string, int> owned_properties;
+        bool owned_all_of_color();
     private: 
         int player_no;
 };

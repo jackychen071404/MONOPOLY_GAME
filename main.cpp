@@ -130,46 +130,46 @@ int main()
 
     //array of Squares
     Square squares[40] = {
-        Square(0, 0, 0, 0, 0, 0, 0, 0, "GO!", 0, 0, positions1[0]), //go
-        Square(1, 60, 2, 10, 30, 90, 160, 250, "brown", 1, 0,positions1[1]), //New Zealand
-        Square(2, 0, 0, 0, 0, 0, 0, 0, "shipment", 0,0,positions1[2]),
-        Square(3, 60, 4, 20, 60, 180, 320, 450, "brown", 1, 0,positions1[3]), //Australia
-        Square(4, 200, 0, 0, 0, 0, 0, 0,"fee", 0,0,positions1[4]),
-        Square(5, 200, 50, 100, 150, 200, 0, 0, "airport", 1, 0,positions1[5]),
-        Square(6, 100, 6, 30, 90, 270, 400, 550, "cyan", 1, 0,positions1[6]),
-        Square(7, 0, 0, 0, 0, 0, 0, 0,"god's plan", 0,0,positions1[7]),
-        Square(8, 100, 6, 30, 90, 270, 400, 550, "cyan", 1, 0,positions1[8]),
-        Square(9, 120, 8, 40, 100, 300, 450, 600, "cyan", 1, 0,positions1[9]),
-        Square(10,0,0, 0, 0, 0, 0, 0,"free", 0,0,positions1[10]),
-        Square(11, 140, 10, 50, 150, 450, 625, 750, "pink", 1, 0,positions1[11]),
-        Square(12, 150, 0, 0, 0, 0, 0, 0,"util", 1,0,positions1[12]),
-        Square(13, 140, 10, 50, 150, 450, 625, 750, "pink", 1, 0,positions1[13]),
-        Square(14, 160, 12, 60, 180, 500, 700, 900, "pink", 1, 0,positions1[14]),
-        Square(15, 200, 50, 100, 150, 200, 0, 0, "airport", 1, 0,positions1[15]),
-        Square(16, 180, 14, 70, 200, 550, 750, 950, "orange", 1, 0,positions1[16]),
-        Square(17, 0, 0, 0, 0, 0, 0, 0,"shipment", 0,0,positions1[17]),
-        Square(18, 180, 14, 70, 200, 550, 750, 950, "orange", 1, 0,positions1[18]),
-        Square(19, 200, 16, 80, 220, 600, 800, 1000, "orange", 1, 0,positions1[19]),
-        Square(20, 0, 0, 0, 0, 0, 0, 0,"IMF", 0,0,positions1[20]),
-        Square(21, 220, 18, 90, 250, 700, 875, 1050, "red", 1, 0,positions1[21]),
-        Square(22, 0, 0, 0, 0, 0, 0, 0,"god's plan", 0,0,positions1[22]),
-        Square(23, 220, 18, 90, 250, 700, 875, 1050, "red", 1, 0,positions1[23]),
-        Square(24, 240, 20, 100, 300, 750, 925, 1100, "red", 1, 0,positions1[24]),
-        Square(25, 200, 50, 100, 150, 200, 0 ,0, "airport", 1,0,positions1[25]),
-        Square(26, 260, 22, 110, 330, 800, 975, 1150, "yellow", 1, 0,positions1[26]),
-        Square(27, 260, 22, 110, 330, 800, 975, 1150, "yellow", 1, 0,positions1[27]),
-        Square(28, 150, 0, 0, 0, 0, 0, 0,"util", 1,0,positions1[28]),
-        Square(29, 280, 24, 120, 360, 850, 1025, 1200, "yellow", 1, 0,positions1[29]),
-        Square(30, 0, 0, 0, 0, 0, 0, 0,"jail", 0,0,positions1[30]),
-        Square(31, 300, 26, 130, 390, 900, 1100, 1275, "green", 1, 0,positions1[31]),
-        Square(32, 300, 26, 130, 390, 900, 1100, 1275, "green", 1, 0,positions1[32]),
-        Square(33, 0, 0, 0, 0, 0, 0, 0,"shipment", 0,0,positions1[33]),
-        Square(34, 320, 28, 150, 450, 1000, 1200, 1400, "green", 1, 0,positions1[34]),
-        Square(35, 200, 50, 100, 150, 200, 0, 0, "airport", 1, 0,positions1[35]),
-        Square(36, 0, 0, 0, 0, 0, 0, 0,"god's plan", 0,0,positions1[36]),
-        Square(37, 350, 35, 175, 500, 1100, 1300, 1500, "blue", 1, 0,positions1[37]),
-        Square(38, 100,0, 0, 0, 0, 0, 0, "fee", 0,0,positions1[38]),
-        Square(39, 400, 50, 200, 600, 1400, 1700, 2000, "blue", 1, 0,positions1[39]),
+        Square(0, 0, 0, 0, 0, 0, 0, 0, 0, "GO!", 0, 0, positions1[0], 0), //go
+        Square(1, 60, 50, 2, 10, 30, 90, 160, 250, "brown", 1, 0,positions1[1], 0), //New Zealand
+        Square(2, 0, 0, 0, 0, 0, 0, 0, 0, "shipment", 0,0,positions1[2], 0),
+        Square(3, 60, 50, 4, 20, 60, 180, 320, 450, "brown", 1, 0,positions1[3], 0), //Australia
+        Square(4, 200, 0, 0, 0, 0, 0, 0, 0,"fee", 0,0,positions1[4], 0),
+        Square(5, 200, 0, 50, 100, 150, 200, 0, 0, "airport", 1, 0,positions1[5], 0),
+        Square(6, 100, 50, 6, 30, 90, 270, 400, 550, "cyan", 1, 0,positions1[6], 0),
+        Square(7, 0, 0, 0, 0, 0, 0, 0, 0,"god's plan", 0,0,positions1[7],0),
+        Square(8, 100, 50, 6, 30, 90, 270, 400, 550, "cyan", 1, 0,positions1[8],0),
+        Square(9, 120, 50, 8, 40, 100, 300, 450, 600, "cyan", 1, 0,positions1[9],0),
+        Square(10,0,0,0, 0, 0, 0, 0, 0,"free", 0,0,positions1[10],0),
+        Square(11, 140, 100, 10, 50, 150, 450, 625, 750, "pink", 1, 0,positions1[11],0),
+        Square(12, 150, 0, 0, 0, 0, 0, 0, 0,"util", 1,0,positions1[12],0),
+        Square(13, 140, 100, 10, 50, 150, 450, 625, 750, "pink", 1, 0,positions1[13],0),
+        Square(14, 160, 100, 12, 60, 180, 500, 700, 900, "pink", 1, 0,positions1[14],0),
+        Square(15, 200, 0, 50, 100, 150, 200, 0, 0, "airport", 1, 0,positions1[15],0),
+        Square(16, 180, 100, 14, 70, 200, 550, 750, 950, "orange", 1, 0,positions1[16],0),
+        Square(17, 0, 0, 0, 0, 0, 0, 0, 0,"shipment", 0,0,positions1[17],0),
+        Square(18, 180, 100, 14, 70, 200, 550, 750, 950, "orange", 1, 0,positions1[18],0),
+        Square(19, 200, 100, 16, 80, 220, 600, 800, 1000, "orange", 1, 0,positions1[19],0),
+        Square(20, 0, 0, 0, 0, 0, 0, 0, 0,"IMF", 0,0,positions1[20],0),
+        Square(21, 220, 150, 18, 90, 250, 700, 875, 1050, "red", 1, 0,positions1[21],0),
+        Square(22, 0, 0, 0, 0, 0, 0, 0, 0,"god's plan", 0,0,positions1[22],0),
+        Square(23, 220, 150, 18, 90, 250, 700, 875, 1050, "red", 1, 0,positions1[23],0),
+        Square(24, 240, 150, 20, 100, 300, 750, 925, 1100, "red", 1, 0,positions1[24],0),
+        Square(25, 200, 0, 50, 100, 150, 200, 0 ,0, "airport", 1,0,positions1[25],0),
+        Square(26, 260, 150, 22, 110, 330, 800, 975, 1150, "yellow", 1, 0,positions1[26],0),
+        Square(27, 260, 150, 22, 110, 330, 800, 975, 1150, "yellow", 1, 0,positions1[27],0),
+        Square(28, 150, 0, 0, 0, 0, 0, 0, 0,"util", 1,0,positions1[28],0),
+        Square(29, 280, 150, 24, 120, 360, 850, 1025, 1200, "yellow", 1, 0,positions1[29],0),
+        Square(30, 0, 0, 0, 0, 0, 0, 0, 0,"jail", 0,0,positions1[30],0),
+        Square(31, 300, 200, 26, 130, 390, 900, 1100, 1275, "green", 1, 0,positions1[31],0),
+        Square(32, 300, 200, 26, 130, 390, 900, 1100, 1275, "green", 1, 0,positions1[32],0),
+        Square(33, 0, 0, 0, 0, 0, 0, 0, 0,"shipment", 0,0,positions1[33],0),
+        Square(34, 320, 200, 28, 150, 450, 1000, 1200, 1400, "green", 1, 0,positions1[34],0),
+        Square(35, 200, 0, 50, 100, 150, 200, 0, 0, "airport", 1, 0,positions1[35],0),
+        Square(36, 0, 0, 0, 0, 0, 0, 0, 0,"god's plan", 0,0,positions1[36],0),
+        Square(37, 350, 200, 35, 175, 500, 1100, 1300, 1500, "blue", 1, 0,positions1[37],0),
+        Square(38, 100,0, 0, 0, 0, 0, 0, 0, "fee", 0,0,positions1[38],0),
+        Square(39, 400, 200, 50, 200, 600, 1400, 1700, 2000, "blue", 1, 0,positions1[39],0),
     };
 
     std::random_device rd; //random number generator
@@ -191,6 +191,7 @@ int main()
     Text auction_phase(font, "AUCTION?", sf::Color::Black, 48, sf::Vector2f(600.f,350.f));
     Text trade(font, "TRADE?", sf::Color::Black, 48, sf::Vector2f(500.f,400.f));
     Text offer(font, "OFFER", sf::Color::Black, 48, sf::Vector2f(500.f,700.f));
+    Text buy_hotels(font, "BUY HOTELS?", sf::Color::Black, 48, sf::Vector2f(200.f,500.f));
     Text request(font, "REQUEST", sf::Color::Black, 48, sf::Vector2f(500.f,700.f));
     Text trade_notif(font, "CAN'T AFFORD", sf::Color::Black, 48, sf::Vector2f(500.f,650.f));
     TextBox moneyOffer(350, 600, 300, 50, font);
@@ -254,8 +255,8 @@ int main()
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 if (dice.shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
                 {
-                    dice.die1 = dis(gen);
-                    dice.die2 = dis(gen);
+                    dice.die1 = 1;//dis(gen);
+                    dice.die2 = 0;//dis(gen);
                     dice.roll_result = dice.die1+dice.die2;
                     dice.roll_display = dice.roll_result;
                     if (dice.die1 != dice.die2) sameRollCount = 0;
@@ -273,6 +274,7 @@ int main()
                     currentPlayer->update_money(0,squares[currentPlayer->currentPos].getPrice());
                     squares[currentPlayer->currentPos].setPlayerNo(currentPlayer->getPlayerNo());
                     squares[currentPlayer->currentPos].setBuyable(0);
+                    currentPlayer->owned_properties[squares[currentPlayer->currentPos].getType()]++;
                     if (currentTurn == PlayerTurn::player1_turn) currentTurn = PlayerTurn::player2_turn;
                     else if (currentTurn == PlayerTurn::player2_turn) currentTurn = PlayerTurn::player1_turn;
                     if (!(otherPlayer->inJail))  currentPhase = GamePhase::WaitForDice;
@@ -302,9 +304,11 @@ int main()
                                 if (currentTurn == PlayerTurn::player1_turn) {
                                     squares[i].setPlayerNo(3);
                                     squares[i].bought_circle.setOutlineColor(sf::Color::Green);
+                                    currentPlayer->owned_properties[squares[i].getType()]--;
                                 } else {
                                     squares[i].setPlayerNo(4); 
                                     squares[i].bought_circle.setOutlineColor(sf::Color::Yellow); //mortgaged
+                                    currentPlayer->owned_properties[squares[i].getType()]--;
                                 }
                                 currentPlayer->update_money(1, squares[i].getPrice() * .5);
                             }
@@ -326,6 +330,7 @@ int main()
                                     currentPlayer->update_money(0, squares[i].getPrice() * .5 * 1.1);
                                     squares[i].bought_circle.setOutlineColor(sf::Color::Red);
                                     squares[i].setPlayerNo(1);
+                                    currentPlayer->owned_properties[squares[i].getType()]++;
                                 }
                             }
                         } else {
@@ -334,6 +339,7 @@ int main()
                                     currentPlayer->update_money(0, squares[i].getPrice() * .5 * 1.1);
                                     squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
                                     squares[i].setPlayerNo(2);
+                                    currentPlayer->owned_properties[squares[i].getType()]++;
                                 }
                             }
                         }
@@ -383,10 +389,13 @@ int main()
                         P2.update_money(0, biddingNo);
                         squares[currentPlayer->currentPos].setPlayerNo(P2.getPlayerNo());
                         squares[currentPlayer->currentPos].setBuyable(0);
+                        P2.owned_properties[squares[currentPlayer->currentPos].getType()]++;
+                        
                     } else if (auctionTurn == AuctionTurn::player2_turn) {
                         P1.update_money(0, biddingNo);
                         squares[currentPlayer->currentPos].setPlayerNo(P1.getPlayerNo());
                         squares[currentPlayer->currentPos].setBuyable(0);
+                        P1.owned_properties[squares[currentPlayer->currentPos].getType()]++;
                     }
                     biddingNo = 0;
                     previousBiddingNo = 0;
@@ -520,16 +529,7 @@ int main()
             }
             if (event.type == sf::Event::MouseButtonPressed && currentPhase == GamePhase::trade_accept) {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                if (accept.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                    for (int i = 0; i <40; i++) {
-                        if (squares[i].getPlayerNo() == 5) {
-                            squares[i].setPlayerNo(otherPlayer->getPlayerNo());
-                            if (otherPlayer->getPlayerNo() == 2) squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
-                            else squares[i].bought_circle.setOutlineColor(sf::Color::Red);
-                        }
-                    }
-                }
-                if (refuse.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                if (refuse.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) { //refuse? give back property
                     for (int i = 0; i < 40; i++) {
                         if (squares[i].getPlayerNo() == 5) {
                             if (currentTurn == PlayerTurn::player1_turn) {
@@ -553,7 +553,7 @@ int main()
                     moneyRequest.clear();
                     if (squares[currentPlayer->currentPos].getBuyable())currentPhase = GamePhase::is_buying_phase;
                     else currentPhase = GamePhase::isNot_buying_phase;
-                } else if (accept.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+                } else if (accept.getBounds().contains(static_cast<sf::Vector2f>(mousePos))) { //money exchange
                     if (moneyOffer.getText() != "") {
                         currentPlayer->update_money(0,std::stoi(moneyOffer.getText()));
                         otherPlayer->update_money(1,std::stoi(moneyOffer.getText()));
@@ -567,17 +567,21 @@ int main()
                             if (currentTurn == PlayerTurn::player1_turn) {
                                 squares[i].setPlayerNo(2);
                                 squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
+                                P1.owned_properties[squares[i].getType()]--;
                             } else if (currentTurn == PlayerTurn::player2_turn) {
                                 squares[i].setPlayerNo(1);
                                 squares[i].bought_circle.setOutlineColor(sf::Color::Red);
+                                P2.owned_properties[squares[i].getType()]--;
                             }
                         } else if (squares[i].getPlayerNo() == 6) {
                             if (currentTurn == PlayerTurn::player1_turn) {
                                 squares[i].setPlayerNo(1);
                                 squares[i].bought_circle.setOutlineColor(sf::Color::Red);
+                                P1.owned_properties[squares[i].getType()]++;
                             } else if (currentTurn == PlayerTurn::player2_turn) {
                                 squares[i].setPlayerNo(2);
                                 squares[i].bought_circle.setOutlineColor(sf::Color::Blue);
+                                P1.owned_properties[squares[i].getType()]--;
                             }
                         }
                     }
@@ -607,8 +611,8 @@ int main()
                     }
                     else {
                         if (squares[currentPlayer->currentPos].getPlayerNo() != currentPlayer->getPlayerNo() && squares[currentPlayer->currentPos].bought_circle.getOutlineColor() != sf::Color::Yellow && squares[currentPlayer->currentPos].bought_circle.getOutlineColor() != sf::Color::Green) {
-                            currentPlayer->update_money(0, squares[currentPlayer->currentPos].getRent0());
-                            otherPlayer->update_money(1, squares[currentPlayer->currentPos].getRent0());
+                            currentPlayer->update_money(0, squares[currentPlayer->currentPos].returnRent());
+                            otherPlayer->update_money(1, squares[currentPlayer->currentPos].returnRent());
                         } 
                         if (currentPlayer->currentPos == 4) currentPlayer->update_money(0, 200);
                         else if (currentPlayer->currentPos == 38) currentPlayer->update_money(0, 100); //two fees
@@ -670,6 +674,7 @@ int main()
         if (currentPhase == GamePhase::is_buying_phase) {
             if (squares[currentPlayer->currentPos].getPrice() <= currentPlayer->money) window.draw(buying_phase.content);
             if (currentPlayer->money > 0) window.draw(auction_phase.content);
+            if (currentPlayer->owned_all_of_color()) window.draw(buy_hotels.content);
             window.draw(mortgage.content);
             window.draw(remortgage.content);
             window.draw(trade.content);
@@ -677,6 +682,7 @@ int main()
         } else if (currentPhase == GamePhase::mortgaging || currentPhase == GamePhase::remortgaging) {
             window.draw(end_mortgage.content);
         } else if (currentPhase == GamePhase::isNot_buying_phase) {
+            if (currentPlayer->owned_all_of_color()) window.draw(buy_hotels.content);
             window.draw(mortgage.content);
             window.draw(remortgage.content);
             window.draw(trade.content);
